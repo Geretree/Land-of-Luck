@@ -38,8 +38,8 @@ dt = 0
 # Aktionen bei Kollisionen
 def bandit():
     print("Peter hat den Banditen berührt!")
-    from Casino.Games.Scripts import bandit
-    bandit
+    from Casino.Games.Scripts import Einarmiger_Bandit
+    Einarmiger_Bandit
 
 
 def roulette():
