@@ -505,20 +505,23 @@ def random_number():
         if num35 == 1 and result == 35:
             print("Du hast auf 25 gesetzt und gewonnen!")
 
-        if red == 1 and color == "rot":
+        if num36 == 1 and color == 36:
             print("Du hast auf 24 gesetzt und gewonnen!")
 
-        if num13 == 1 and result == 13:
+        if red == 1 and result == "rot":
+            print("Du hast auf 13 gesetzt und gewonnen!")
+
+        if black == 1 and result == 25:
+            print("Du hast auf 25 gesetzt und gewonnen!")
+
+        if even == 1 and result == 24:
+            print("Du hast auf 24 gesetzt und gewonnen!")
+
+        if odd == 1 and result == 13:
             print("Du hast auf 13 gesetzt und gewonnen!")
 
         if num25 == 1 and result == 25:
             print("Du hast auf 25 gesetzt und gewonnen!")
-
-        if num24 == 1 and result == 24:
-            print("Du hast auf 24 gesetzt und gewonnen!")
-
-        if num13 == 1 and result == 13:
-            print("Du hast auf 13 gesetzt und gewonnen!")
 
         if num25 == 1 and result == 25:
             print("Du hast auf 25 gesetzt und gewonnen!")
