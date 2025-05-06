@@ -323,7 +323,7 @@ def random_number():
             26, 29, 32, 35
         }
 
-        print("Rot" if is_red(result) else "Schwarz")
+        print("RED" if is_red(result) else "BLACK")
 
         if 1 <= result <= 18:
             print("1 to 18")
@@ -385,7 +385,7 @@ def random_number():
         num35 = 0
         num36 = 0
 
-        red = 1
+        red = 0
         black = 0
 
         even = 0
