@@ -44,7 +44,7 @@ def draw_field():
 
 def play():
     #Der Eigenliche Spielbegin als Variabel
-    #Geremia
+    #Geremia hallo
 
 # === Spielschleife ===
 running = True
