@@ -3,7 +3,7 @@ import random
 import sys
 import math
 
-# Farben
+# FarbengehenmiraufdieEier
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 GOLD = (215, 162, 20)
