@@ -42,6 +42,22 @@ def draw_field():
     # Slot-Maschine zeichnen
     slot_machine()
 
+def play():
+    #Der Eigenliche Spielbegin als Variabel
+    #Geremia hallo
+
+# === Spielschleife ===
+running = True
+while running and coins > 0:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                running = False
+            elif event.key == pygame.K_SPACE:
+                play()
+
 running = True
 while running and coins > 0:
     for event in pygame.event.get():
