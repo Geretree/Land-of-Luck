@@ -52,20 +52,10 @@ while running and coins > 0:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-        elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_ESCAPE:
-                running = False
-            elif event.key == pygame.K_SPACE:
-                play()
-
-running = True
-while running and coins > 0:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 running = False
+                play()
 
     draw_field()
     pygame.display.flip()
