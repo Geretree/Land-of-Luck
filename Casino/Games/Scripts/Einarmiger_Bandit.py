@@ -41,6 +41,11 @@ lever_pulled = False
 spin_start_time = 0
 SPIN_DURATION = 500  # Hebel bleibt 0.5s unten
 
+# Spin-Sperre
+spin_locked = False
+spin_lock_time = 0
+SPIN_LOCK_DURATION = 5000  # 5 Sekunden
+
 def draw_housing():
     pygame.draw.rect(screen, GOLD, (*HOUSING_POS, HOUSING_WIDTH, HOUSING_HEIGHT), border_radius=30)
     inner = pygame.Rect(HOUSING_POS[0] + 10, HOUSING_POS[1] + 10,
@@ -74,11 +79,17 @@ def play_spin():
     return [random.randint(1, 7) for _ in range(REEL_COUNT)]
 
 def detect_patterns(values):
+    global spin_locked, spin_lock_time, now
     colors = [WHITE] * len(values)
 
     # Drei gleiche
     if values[0] == values[1] == values[2]:
-        return [RED] * 3 if values[0] == 7 else [GREEN] * 3
+        if values[0] == 7:
+            spin_locked = True
+            spin_lock_time = now
+            return [RED] * 3
+        else:
+            return [GREEN] * 3
 
     # Reihenfolge
     if sorted(values) == list(range(min(values), max(values) + 1)):
@@ -93,7 +104,7 @@ def detect_patterns(values):
     return colors
 
 def main():
-    global lever_pulled, lever_angle, spin_start_time
+    global lever_pulled, lever_angle, spin_start_time, spin_locked, spin_lock_time
 
     reels = ["-", "-", "-"]
     colors = [WHITE] * 3
@@ -108,22 +119,32 @@ def main():
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     running = False
-                elif event.key == pygame.K_SPACE and not lever_pulled:
+                elif event.key == pygame.K_SPACE and not lever_pulled and not spin_locked:
                     lever_pulled = True
                     spin_start_time = now
                     lever_angle = -45  # Hebel nach unten
                     reels = play_spin()
                     colors = detect_patterns(reels)
 
-        # Hebel zurückstellen nach SPIN_DURATION
+        # Hebel langsam zurück
         if lever_pulled and now - spin_start_time > SPIN_DURATION:
             lever_angle = 45
             lever_pulled = False
+
+        # Spin-Sperre aufheben nach 5 Sekunden
+        if spin_locked and now - spin_lock_time > SPIN_LOCK_DURATION:
+            spin_locked = False
 
         screen.fill(DARK_GRAY)
         draw_housing()
         draw_reels(reels, colors)
         draw_lever()
+
+        # Hinweis auf Wartezeit
+        if spin_locked:
+            wait_text = font.render("Warte...", True, BLUE)
+            screen.blit(wait_text, (CENTER[0] - wait_text.get_width() // 2, REEL_Y + REEL_HEIGHT + 30))
+
         pygame.display.flip()
         clock.tick(60)
 
