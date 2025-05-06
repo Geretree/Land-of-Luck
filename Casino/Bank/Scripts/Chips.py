@@ -16,8 +16,10 @@ chip_rect = Chip5_img.get_rect(center=(screen.get_width() // 2, screen.get_heigh
 running = True
 while running:
     for event in pygame.event.get():
-        if event.type == pygame.QUIT:
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
             running = False
+
+
 
     # Fülle den Bildschirm mit einer Farbe (z.B. schwarz)
     screen.fill((0, 0, 0))

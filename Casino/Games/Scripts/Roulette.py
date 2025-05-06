@@ -87,8 +87,8 @@ def draw_slice(angle, color, index):
 
 def draw_Edge(angle):
     a = math.radians((angle+5) + SLICE_ANGLE / 2)
-    x1 = CENTER[0] + 300 * X_SCALE * math.cos(a)
-    y1 = CENTER[1] + 300 * Y_SCALE * math.sin(a)
+    x1 = CENTER[0] + 304 * X_SCALE * math.cos(a)
+    y1 = CENTER[1] + 304 * Y_SCALE * math.sin(a)
     x2 = CENTER[0] + 200 * X_SCALE * math.cos(a)
     y2 = CENTER[1] + 200 * Y_SCALE * math.sin(a)
     pygame.draw.line(screen, GOLD, (x1, y1), (x2, y2), int(6 * X_SCALE))
@@ -221,11 +221,6 @@ def draw_field():
 ball_visible = False
 ball_position = None
 last_result = None
-
-def chips():
-    from Casino.Bank.Scripts.Chips import Chip
-    chip = Chip(5, 100, 100, int(40 * HEIGHT / 900))
-    chip.draw(screen)
 
 
 def random_number():
@@ -542,7 +537,7 @@ while running and coins > 0:
                 ball_position = None
                 last_result = None
                 random_number()
-                chips()
+
 
 
 
