@@ -1,6 +1,5 @@
 import pygame
 
-#Salami
 pygame.init()
 
 # Bildschirm im Vollbildmodus
