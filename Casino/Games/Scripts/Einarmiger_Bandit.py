@@ -43,7 +43,7 @@ def draw_field():
     slot_machine()
 
 def play():
-    #Der Eigenliche Spielbegin
+    #Der Eigenliche Spielbegin als Variabel
 
 # === Spielschleife ===
 running = True
