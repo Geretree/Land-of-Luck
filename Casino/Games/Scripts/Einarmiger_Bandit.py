@@ -4,7 +4,7 @@ import sys
 import math
 import json
 
-# Farbengehen
+# Farbengehens
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 GOLD = (215, 162, 20)
