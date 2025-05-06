@@ -47,8 +47,6 @@ def play():
     #Geremia hallo
 
 # === Spielschleife ===
-
-
 running = True
 while running and coins > 0:
     for event in pygame.event.get():
