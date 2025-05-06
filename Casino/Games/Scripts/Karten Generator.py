@@ -1,4 +1,6 @@
 import pygame
+import random
+
 
 # Farben
 BLACK = (0, 0, 0)
@@ -14,10 +16,24 @@ screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
 pygame.display.set_caption("Jasskarte anzeigen")
 
 # Jasskartengröße (z. B. 126 x 189 px)
-card_width = 126
-card_height = 189
-card_rect = pygame.Rect(100, 100, card_width, card_height)
+card_width = 126 * 2
+card_height = 189 * 2
+x = 100
+y = 100
+card_rect = pygame.Rect(x, y, card_width, card_height)
 
+
+
+def Form():
+    pygame.draw.circle(screen, BLACK, (x + 30, y + 30), 10)
+    pygame.draw.circle(screen, BLACK, (x + 40, y + 20), 10)
+    pygame.draw.circle(screen, BLACK, (x + 50, y + 30), 10)
+    pygame.draw.polygon(screen, BLACK, [
+        (x+38, y+20),
+        (x+42, y+20),
+        (x+42, y+50),
+        (x+38, y+50)
+    ])
 # Hauptloop
 running = True
 while running:
@@ -34,7 +50,7 @@ while running:
     # Karte zeichnen
     pygame.draw.rect(screen, WHITE, card_rect)
     pygame.draw.rect(screen, BLACK, card_rect, 2)  # schwarzer Rahmen
-
+    Form()
     pygame.display.flip()
 
 pygame.quit()
