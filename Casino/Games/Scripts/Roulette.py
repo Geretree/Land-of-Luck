@@ -4,11 +4,7 @@ import json
 import math
 import sys
 
-# === Konfiguration ===
-RADIUS = 300
-SLICE_ANGLE = 360 / 37
-
-# Farben
+# === Farben ===
 BLACK = (0, 0, 0)
 RED = (200, 0, 0)
 GREEN = (45, 117, 16)
@@ -20,9 +16,13 @@ GOLD = (215, 162, 20)
 pygame.init()
 screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
 WIDTH, HEIGHT = screen.get_size()
-CENTER = (400, HEIGHT // 2)
-pygame.display.set_caption("Roulette")
+CENTER = (WIDTH // 4, HEIGHT // 2)
+X_SCALE = WIDTH / 1920
+Y_SCALE = HEIGHT / 1080
+RADIUS = int(300 * X_SCALE)
+SLICE_ANGLE = 360 / 37
 clock = pygame.time.Clock()
+pygame.display.set_caption("Roulette")
 
 # Lade Coins
 try:
@@ -33,45 +33,36 @@ except FileNotFoundError:
     coins = 100
     daten = {"coin": coins}
 
-# Liste der Roulette-Zahlen (im französischen Format)
 numbers = [
-    0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 30, 8, 23, 10, 5, 24, 16, 33, 1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26, 0
+    0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 30,
+    8, 23, 10, 5, 24, 16, 33, 1, 20, 14, 31, 9, 22, 18, 29, 7,
+    28, 12, 35, 3, 26, 0
 ]
 
 def draw_wheel():
-    pygame.draw.circle(screen, BROWN, CENTER, 360)
-    pygame.draw.circle(screen, GOLD, CENTER, 310)
+    pygame.draw.circle(screen, BROWN, CENTER, int(360 * X_SCALE))
+    pygame.draw.circle(screen, GOLD, CENTER, int(310 * X_SCALE))
     green_index = 37
     start_angle = -95 - SLICE_ANGLE * green_index
     angle = start_angle
-
-    # Außenbereiche (Farbfelder)
     for i in range(38):
         color = GREEN if i == 37 else RED if i % 2 else BLACK
         draw_slice(angle, color, i)
         angle += SLICE_ANGLE
-
-    # Mitte zeichnen
-    pygame.draw.circle(screen, GOLD, CENTER, 255)
-    pygame.draw.circle(screen, GREEN, CENTER, 245)
-    pygame.draw.circle(screen, GOLD, CENTER, 205)
-    pygame.draw.circle(screen, BROWN, CENTER, 195)
-    pygame.draw.circle(screen, GOLD, CENTER, 50)
-
-    # Gold-Markierungen aussen
-    angle = start_angle  # Zurücksetzen!
+    pygame.draw.circle(screen, GOLD, CENTER, int(255 * X_SCALE))
+    pygame.draw.circle(screen, GREEN, CENTER, int(245 * X_SCALE))
+    pygame.draw.circle(screen, GOLD, CENTER, int(205 * X_SCALE))
+    pygame.draw.circle(screen, BROWN, CENTER, int(195 * X_SCALE))
+    pygame.draw.circle(screen, GOLD, CENTER, int(50 * X_SCALE))
+    angle = start_angle
     for i in range(38):
         draw_Edge(angle)
         angle += SLICE_ANGLE
-
-    # Gold-Markierungen innen
-    angle = start_angle  # Zurücksetzen!
+    angle = start_angle
     for i in range(4):
         draw_Middle(angle)
         angle += 90
-
-    # Gold-Markierungen innen punkte
-    angle = start_angle  # Zurücksetzen!
+    angle = start_angle
     for i in range(4):
         draw_Points(angle)
         angle += 90
@@ -86,115 +77,100 @@ def draw_slice(angle, color, index):
         y = CENTER[1] + RADIUS * math.sin(a)
         points.append((x, y))
     pygame.draw.polygon(screen, color, points)
-
-    # Die Zahl auf jedem Slice anzeigen
     a = math.radians(angle + SLICE_ANGLE / 2)
-    x = CENTER[0] + (RADIUS - 25) * math.cos(a)
-    y = CENTER[1] + (RADIUS - 25) * math.sin(a)
-    font = pygame.font.SysFont("arial", 20)
+    x = CENTER[0] + (RADIUS - 25 * X_SCALE) * math.cos(a)
+    y = CENTER[1] + (RADIUS - 25 * Y_SCALE) * math.sin(a)
+    font = pygame.font.SysFont("arial", int(20 * Y_SCALE))
     text = font.render(str(numbers[index]), True, WHITE)
     text_rect = text.get_rect(center=(x, y))
     screen.blit(text, text_rect)
 
 def draw_Edge(angle):
-    a = math.radians((angle + 5) + SLICE_ANGLE / 2)
-    x1 = CENTER[0] + 300 * math.cos(a)
-    y1 = CENTER[1] + 300 * math.sin(a)
-    x2 = CENTER[0] + 200 * math.cos(a)
-    y2 = CENTER[1] + 200 * math.sin(a)
-    pygame.draw.line(screen, GOLD, (x1, y1), (x2, y2), 4)
+    a = math.radians((angle+5) + SLICE_ANGLE / 2)
+    x1 = CENTER[0] + 300 * X_SCALE * math.cos(a)
+    y1 = CENTER[1] + 300 * Y_SCALE * math.sin(a)
+    x2 = CENTER[0] + 200 * X_SCALE * math.cos(a)
+    y2 = CENTER[1] + 200 * Y_SCALE * math.sin(a)
+    pygame.draw.line(screen, GOLD, (x1, y1), (x2, y2), int(6 * X_SCALE))
 
 def draw_Middle(angle):
     a = math.radians(angle + SLICE_ANGLE / 2)
-    x1 = CENTER[0] + 0 * math.cos(a)
-    y1 = CENTER[1] + 0 * math.sin(a)
-    x2 = CENTER[0] + 160 * math.cos(a)
-    y2 = CENTER[1] + 160 * math.sin(a)
-    pygame.draw.line(screen, GOLD, (x1, y1), (x2, y2), 10)
+    x2 = CENTER[0] + 160 * X_SCALE * math.cos(a)
+    y2 = CENTER[1] + 160 * Y_SCALE * math.sin(a)
+    pygame.draw.line(screen, GOLD, CENTER, (x2, y2), int(10 * X_SCALE))
 
 def draw_Points(angle):
     a = math.radians(angle + SLICE_ANGLE / 2)
-    x1 = CENTER[0] + 160 * math.cos(a)
-    y1 = CENTER[1] + 160 * math.sin(a)
-    pygame.draw.circle(screen, GOLD, (x1, y1), 20)
-
-
-
-
-
-#---------------------------------------Fläche----------------------------------------------
+    x1 = CENTER[0] + 160 * X_SCALE * math.cos(a)
+    y1 = CENTER[1] + 160 * Y_SCALE * math.sin(a)
+    pygame.draw.circle(screen, GOLD, (x1, y1), int(20 * X_SCALE))
 
 def draw_field():
-    pygame.draw.line(screen, WHITE, (850, 100), (1900, 100), 10)
-    pygame.draw.line(screen, WHITE, (925, 200), (1900, 200), 10)
-    pygame.draw.line(screen, WHITE, (925, 300), (1900, 300), 10)
-    pygame.draw.line(screen, WHITE, (850, 400), (1900, 400), 10)
-    pygame.draw.line(screen, WHITE, (925, 500), (1825, 500), 10)
-    pygame.draw.line(screen, WHITE, (925, 600), (1825, 600), 10)
-    pygame.draw.line(screen, WHITE, (850, 100), (800, 250), 10)
-    pygame.draw.line(screen, WHITE, (850, 400), (800, 250), 10)
-    leng = 925
+    def scale(x, y):
+        return int(x * X_SCALE), int(y * Y_SCALE)
+
+    def draw_line(start, end, width):
+        pygame.draw.line(screen, WHITE, scale(*start), scale(*end), int(width * X_SCALE))
+
+    draw_line((850, 100), (1900, 100), 10)
+    draw_line((925, 200), (1900, 200), 10)
+    draw_line((925, 300), (1900, 300), 10)
+    draw_line((850, 400), (1900, 400), 10)
+    draw_line((925, 500), (1825, 500), 10)
+    draw_line((925, 600), (1825, 600), 10)
+    draw_line((850, 100), (800, 250), 10)
+    draw_line((850, 400), (800, 250), 10)
+
     for i in range(14):
-        pygame.draw.line(screen, WHITE, (leng, 96), (leng, 405), 10)
-        leng += 75
-    leng = 925
+        x = 925 + i * 75
+        draw_line((x, 100), (x, 400), 10)
+
     for i in range(4):
-        pygame.draw.line(screen, WHITE, (leng, 396), (leng, 505), 10)
-        leng += 300
-    leng = 925
+        x = 925 + i * 300
+        draw_line((x, 400), (x, 500), 10)
+
     for i in range(7):
-        pygame.draw.line(screen, WHITE, (leng, 496), (leng, 605), 10)
-        leng += 150
+        x = 925 + i * 150
+        draw_line((x, 500), (x, 600), 10)
 
-    font = pygame.font.SysFont(None, 36)
-
+    font = pygame.font.SysFont(None, int(36 * Y_SCALE))
     labels = ["1st 12", "2nd 12", "3rd 12"]
-
     for i, x in enumerate([945, 1245, 1545]):
-        pygame.draw.rect(screen, GOLD, (x, 420, 260, 60))
-        pygame.draw.rect(screen, GREEN, (x + 2, 422, 256, 56))
-
-        # Text vorbereiten
+        sx, sy = scale(x, 420)
+        pygame.draw.rect(screen, GOLD, (sx, sy, int(260 * X_SCALE), int(60 * Y_SCALE)))
+        pygame.draw.rect(screen, GREEN, (sx + 2, sy + 2, int(256 * X_SCALE), int(56 * Y_SCALE)))
         text = font.render(labels[i], True, WHITE)
-        text_rect = text.get_rect(center=(x + 130, 450))  # 130 = Hälfte der Breite (260/2), 450 = Mitte der Höhe
+        text_rect = text.get_rect(center=(sx + int(130 * X_SCALE), sy + int(30 * Y_SCALE)))
         screen.blit(text, text_rect)
 
     labels = ["1 to 18", "EVEN", "ODD", "19 to 36"]
-
     for i, x in enumerate([945, 1095, 1545, 1695]):
-        pygame.draw.rect(screen, GOLD, (x, 520, 110, 60))
-        pygame.draw.rect(screen, GREEN, (x + 2, 522, 106, 56))
-
-        # Text vorbereiten
+        sx, sy = scale(x, 520)
+        pygame.draw.rect(screen, GOLD, (sx, sy, int(110 * X_SCALE), int(60 * Y_SCALE)))
+        pygame.draw.rect(screen, GREEN, (sx + 2, sy + 2, int(106 * X_SCALE), int(56 * Y_SCALE)))
         text = font.render(labels[i], True, WHITE)
-        text_rect = text.get_rect(center=(x + 55, 550))  # 130 = Hälfte der Breite (260/2), 450 = Mitte der Höhe
+        text_rect = text.get_rect(center=(sx + int(55 * X_SCALE), sy + int(30 * Y_SCALE)))
         screen.blit(text, text_rect)
 
-
-
-    font = pygame.font.SysFont(None, 18)
+    font_small = pygame.font.SysFont(None, int(18 * Y_SCALE))
     labels = ["2to1", "2to1", "2to1"]
-
     for i, y in enumerate([120, 220, 320]):
-        pygame.draw.rect(screen, GOLD, (1845, y, 35, 60))
-        pygame.draw.rect(screen, GREEN, (1847, y + 2, 31, 56))
-
-        # Text mittig im grünen Feld platzieren
-        text = font.render(labels[i], True, WHITE)
-        text_rect = text.get_rect(center=(1845 + 35 // 2, y + 60 // 2))
+        sx, sy = scale(1845, y)
+        pygame.draw.rect(screen, GOLD, (sx, sy, int(35 * X_SCALE), int(60 * Y_SCALE)))
+        pygame.draw.rect(screen, GREEN, (sx + 2, sy + 2, int(31 * X_SCALE), int(56 * Y_SCALE)))
+        text = font_small.render(labels[i], True, WHITE)
+        text_rect = text.get_rect(center=(sx + int(17 * X_SCALE), sy + int(30 * Y_SCALE)))
         screen.blit(text, text_rect)
-
-    font = pygame.font.SysFont(None, 36)
 
     def draw_diamond(x, y, size1, size2, color):
+        x, y = scale(x, y)
         pygame.draw.polygon(screen, color, [
-            (x, y - size1),
-            (x + size2, y),
-            (x, y + size1),
-            (x - size2, y)
+            (x, y - int(size1 * Y_SCALE)),
+            (x + int(size2 * X_SCALE), y),
+            (x, y + int(size1 * Y_SCALE)),
+            (x - int(size2 * X_SCALE), y)
         ])
 
-    # Diamanten mit Schichten
     diamonds = [
         (1300, 550, 40, 60, GOLD),
         (1300, 550, 38, 58, RED),
@@ -205,20 +181,18 @@ def draw_field():
     for x, y, size1, size2, color in diamonds:
         draw_diamond(x, y, size1, size2, color)
 
-    pygame.draw.ellipse(screen, GOLD, (838, 208, 59, 84))
-    pygame.draw.ellipse(screen, GREEN, (840, 210, 55, 80))
-
-    text = font.render("0", True, WHITE)
-    screen.blit(text, (860, 240))
-
+    pygame.draw.ellipse(screen, GOLD, (*scale(838, 208), int(59 * X_SCALE), int(84 * Y_SCALE)))
+    pygame.draw.ellipse(screen, GREEN, (*scale(840, 210), int(55 * X_SCALE), int(80 * Y_SCALE)))
+    font = pygame.font.SysFont(None, int(36 * Y_SCALE))
+    screen.blit(font.render("0", True, WHITE), scale(860, 240))
 
     def draw_color(color, x, y, number):
-        pygame.draw.ellipse(screen, color, (x, y, 55, 80))
-        text = font.render(str(number), True, (255, 255, 255))
-        text_rect = text.get_rect(center=(x + 27, y + 40))
+        x, y = scale(x, y)
+        pygame.draw.ellipse(screen, color, (x, y, int(55 * X_SCALE), int(80 * Y_SCALE)))
+        text = font.render(str(number), True, WHITE)
+        text_rect = text.get_rect(center=(x + int(27 * X_SCALE), y + int(40 * Y_SCALE)))
         screen.blit(text, text_rect)
 
-    # Farben in Zeilen
     rows = [
         [RED, BLACK, RED, BLACK, BLACK, RED, RED, BLACK, RED, BLACK, BLACK, RED],
         [BLACK, RED, BLACK, BLACK, RED, BLACK, BLACK, RED, BLACK, BLACK, RED, BLACK],
@@ -229,16 +203,13 @@ def draw_field():
     posy_start = 310
     rows_count = len(rows)
     cols_count = len(rows[0])
-
-    # Zahlen von oben nach unten (Zeile 0 = oben)
     numbers = [[0 for _ in range(cols_count)] for _ in range(rows_count)]
     n = 1
     for col in range(cols_count):
-        for row in range(rows_count):  # <--- von oben nach unten
+        for row in range(rows_count):
             numbers[row][col] = n
             n += 1
 
-    # Zeichnen: zeilenweise
     for row in range(rows_count):
         posy = posy_start - row * 100
         posx = posx_start
@@ -251,6 +222,12 @@ ball_visible = False
 ball_position = None
 last_result = None
 
+def chips():
+    from Casino.Bank.Scripts.Chips import Chip
+    chip = Chip(5, 100, 100, int(40 * HEIGHT / 900))
+    chip.draw(screen)
+
+
 def random_number():
     rand_index = random.randint(0, 36)
     wheel_numbers = [
@@ -259,7 +236,10 @@ def random_number():
         20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26, 0
     ]
 
-    radius = 225
+    # Dynamischer Radius auf Basis der Bildschirmhöhe
+    base_ball_radius = 187  # Ursprünglich bei Höhe 900
+    scaled_ball_radius = int((HEIGHT / 900) * base_ball_radius)
+
     start_angle = -90
     angle = start_angle
     SLICE_ANGLE = 360 / 37
@@ -276,9 +256,12 @@ def random_number():
 
         # Position berechnen
         rad = math.radians(angle % 360)
-        ball_x = CENTER[0] + radius * math.cos(rad)
-        ball_y = CENTER[1] + radius * math.sin(rad)
-        pygame.draw.circle(screen, WHITE, (int(ball_x), int(ball_y)), 12)
+        ball_x = CENTER[0] + scaled_ball_radius * math.cos(rad)
+        ball_y = CENTER[1] + scaled_ball_radius * math.sin(rad)
+
+        # Ballgröße anpassen (z. B. 12 px bei Höhe 900)
+        ball_radius = int((HEIGHT / 900) * 12)
+        pygame.draw.circle(screen, WHITE, (int(ball_x), int(ball_y)), ball_radius)
 
         pygame.display.flip()
         clock.tick(60)
@@ -293,7 +276,6 @@ def random_number():
     # Ergebnis berechnen
     global ball_position, ball_visible, last_result
 
-    # Finale Zahl berechnen
     final_angle = angle % 360
     adjusted_angle = (final_angle + 95) % 360  # Korrektur je nach Startwinkel / Ausrichtung
     index = int(adjusted_angle // SLICE_ANGLE)
@@ -302,7 +284,6 @@ def random_number():
     ball_position = (int(ball_x), int(ball_y))  # speichere Ballposition
     last_result = result
     ball_visible = True  # Ball soll nun angezeigt bleiben
-    color = 0
 
     print(result)
     if result == 0:
@@ -561,6 +542,7 @@ while running and coins > 0:
                 ball_position = None
                 last_result = None
                 random_number()
+                chips()
 
 
 
