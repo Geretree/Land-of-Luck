@@ -4,7 +4,7 @@ import json
 import math
 import sys
 
-# === Konfiguration ===
+# ==== Konfiguration ====
 RADIUS = 300
 SLICE_ANGLE = 360 / 37
 
