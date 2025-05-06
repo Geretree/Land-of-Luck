@@ -17,6 +17,7 @@ screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Einarmiger Bandit")
 clock = pygame.time.Clock()
 
+
 # Center
 CENTER = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
 
@@ -91,6 +92,44 @@ def main():
                 elif event.key == pygame.K_SPACE and not lever_pulled:
                     reels = play_spin()
                     lever_pulled = False
+=======
+# Lade Coins
+try:
+    with open("../../Bank/Data/coin.json", "r") as f:
+        daten = json.load(f)
+    coins = daten["coin"]
+except FileNotFoundError:
+    coins = 100
+    daten = {"coin": coins}
+
+def slot_machine():
+    # Beispiel: Ein mittleres Rechteck als Slot-Kasten
+    rect_width, rect_height = 300, 500
+    rect_x = CENTER[0] - rect_width // 2
+    rect_y = CENTER[1] - rect_height // 2
+    pygame.draw.rect(screen, GOLD, (rect_x, rect_y, rect_width, rect_height), border_radius=20)
+
+def draw_field():
+    # Hintergrund grau füllen
+    screen.fill((50, 50, 50))
+    # Slot-Maschine zeichnen
+    slot_machine()
+
+def play():
+    #Der Eigenliche Spielbegin als Variabel
+    #Geremia hallo
+
+# === Spielschleife ===
+running = True
+while running and coins > 0:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                running = False
+                play()
+        main
 
         screen.fill(DARK_GRAY)
         draw_housing()
