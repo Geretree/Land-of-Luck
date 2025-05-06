@@ -323,7 +323,7 @@ def random_number():
             26, 29, 32, 35
         }
 
-        print("Rot" if is_red(result) else "Schwarz")
+        print("RED" if is_red(result) else "BLACK")
 
         if 1 <= result <= 18:
             print("1 to 18")
@@ -341,8 +341,9 @@ def random_number():
             print("3rd Row")
         elif is_2(result):
             print("2nd Row")
-        else:
+        elif result != 0:
             print("1st Row")
+
 
     def calculator():
         num0 = 0
@@ -397,134 +398,151 @@ def random_number():
         thirteen_to_twentyfour = 0
         twentyfive_to_thirtysix = 0
 
+        st_row = 0
+        nd_row = 0
+        rd_row = 0
+
         if num0 == 1 and result == 0:
-            print("Du hast auf 24 gesetzt und gewonnen!")
+            print("Du hast auf 0 gesetzt und gewonnen!")
 
         if num1 == 1 and result == 1:
-            print("Du hast auf 13 gesetzt und gewonnen!")
+            print("Du hast auf 1 gesetzt und gewonnen!")
 
         if num2 == 1 and result == 2:
-            print("Du hast auf 25 gesetzt und gewonnen!")
+            print("Du hast auf 2 gesetzt und gewonnen!")
 
         if num3 == 1 and result == 3:
-            print("Du hast auf 24 gesetzt und gewonnen!")
+            print("Du hast auf 3 gesetzt und gewonnen!")
 
         if num4 == 1 and result == 4:
-            print("Du hast auf 13 gesetzt und gewonnen!")
+            print("Du hast auf 4 gesetzt und gewonnen!")
 
         if num5 == 1 and result == 5:
-            print("Du hast auf 25 gesetzt und gewonnen!")
+            print("Du hast auf 5 gesetzt und gewonnen!")
 
         if num6 == 1 and result == 6:
-            print("Du hast auf 24 gesetzt und gewonnen!")
+            print("Du hast auf 6 gesetzt und gewonnen!")
 
         if num7 == 1 and result == 7:
-            print("Du hast auf 13 gesetzt und gewonnen!")
+            print("Du hast auf 7 gesetzt und gewonnen!")
 
         if num8 == 1 and result == 8:
-            print("Du hast auf 25 gesetzt und gewonnen!")
+            print("Du hast auf 8 gesetzt und gewonnen!")
 
         if num9 == 1 and result == 9:
-            print("Du hast auf 24 gesetzt und gewonnen!")
+            print("Du hast auf 9 gesetzt und gewonnen!")
 
         if num10 == 1 and result == 10:
-            print("Du hast auf 13 gesetzt und gewonnen!")
+            print("Du hast auf 10 gesetzt und gewonnen!")
 
         if num11 == 1 and result == 11:
-            print("Du hast auf 25 gesetzt und gewonnen!")
+            print("Du hast auf 11 gesetzt und gewonnen!")
 
         if num12 == 1 and result == 12:
-            print("Du hast auf 24 gesetzt und gewonnen!")
+            print("Du hast auf 12 gesetzt und gewonnen!")
 
         if num13 == 1 and result == 13:
             print("Du hast auf 13 gesetzt und gewonnen!")
 
         if num14 == 1 and result == 14:
-            print("Du hast auf 25 gesetzt und gewonnen!")
+            print("Du hast auf 14 gesetzt und gewonnen!")
 
         if num15 == 1 and result == 15:
-            print("Du hast auf 24 gesetzt und gewonnen!")
+            print("Du hast auf 15 gesetzt und gewonnen!")
 
         if num16 == 1 and result == 16:
-            print("Du hast auf 13 gesetzt und gewonnen!")
+            print("Du hast auf 16 gesetzt und gewonnen!")
 
         if num17 == 1 and result == 17:
-            print("Du hast auf 25 gesetzt und gewonnen!")
+            print("Du hast auf 17 gesetzt und gewonnen!")
 
         if num18 == 1 and result == 18:
-            print("Du hast auf 24 gesetzt und gewonnen!")
+            print("Du hast auf 18 gesetzt und gewonnen!")
 
         if num19 == 1 and result == 19:
-            print("Du hast auf 13 gesetzt und gewonnen!")
+            print("Du hast auf 19 gesetzt und gewonnen!")
 
         if num20 == 1 and result == 20:
-            print("Du hast auf 25 gesetzt und gewonnen!")
+            print("Du hast auf 20 gesetzt und gewonnen!")
 
         if num21 == 1 and result == 21:
-            print("Du hast auf 24 gesetzt und gewonnen!")
+            print("Du hast auf 21 gesetzt und gewonnen!")
 
         if num22 == 1 and result == 22:
-            print("Du hast auf 13 gesetzt und gewonnen!")
+            print("Du hast auf 22 gesetzt und gewonnen!")
 
         if num23 == 1 and result == 23:
-            print("Du hast auf 25 gesetzt und gewonnen!")
+            print("Du hast auf 23 gesetzt und gewonnen!")
 
         if num24 == 1 and result == 24:
             print("Du hast auf 24 gesetzt und gewonnen!")
 
         if num25 == 1 and result == 25:
-            print("Du hast auf 13 gesetzt und gewonnen!")
+            print("Du hast auf 25 gesetzt und gewonnen!")
 
         if num26 == 1 and result == 26:
-            print("Du hast auf 25 gesetzt und gewonnen!")
+            print("Du hast auf 26 gesetzt und gewonnen!")
 
         if num27 == 1 and result == 27:
-            print("Du hast auf 24 gesetzt und gewonnen!")
+            print("Du hast auf 27 gesetzt und gewonnen!")
 
         if num28 == 1 and result == 28:
-            print("Du hast auf 13 gesetzt und gewonnen!")
+            print("Du hast auf 28 gesetzt und gewonnen!")
 
         if num29 == 1 and result == 29:
-            print("Du hast auf 25 gesetzt und gewonnen!")
+            print("Du hast auf 29 gesetzt und gewonnen!")
 
         if num30 == 1 and result == 30:
-            print("Du hast auf 24 gesetzt und gewonnen!")
+            print("Du hast auf 30 gesetzt und gewonnen!")
 
         if num31 == 1 and result == 31:
-            print("Du hast auf 13 gesetzt und gewonnen!")
+            print("Du hast auf 31 gesetzt und gewonnen!")
 
         if num32 == 1 and result == 32:
-            print("Du hast auf 25 gesetzt und gewonnen!")
+            print("Du hast auf 32 gesetzt und gewonnen!")
 
         if num33 == 1 and result == 33:
-            print("Du hast auf 24 gesetzt und gewonnen!")
+            print("Du hast auf 33 gesetzt und gewonnen!")
 
         if num34 == 1 and result == 34:
-            print("Du hast auf 13 gesetzt und gewonnen!")
+            print("Du hast auf 34 gesetzt und gewonnen!")
 
         if num35 == 1 and result == 35:
-            print("Du hast auf 25 gesetzt und gewonnen!")
+            print("Du hast auf 35 gesetzt und gewonnen!")
 
-        if num36 == 1 and color == 36:
-            print("Du hast auf 24 gesetzt und gewonnen!")
+        if num36 == 1 and result == 36:
+            print("Du hast auf 36 gesetzt und gewonnen!")
 
-        if red == 1 and result == "rot":
-            print("Du hast auf 13 gesetzt und gewonnen!")
+        if red == 1 and is_red(result):
+            print("Du hast auf Rot gesetzt und gewonnen!")
+        elif black == 1:
+            print("Du hast auf Schwarz gesetzt und gewonnen!")
 
-        if black == 1 and result == 25:
-            print("Du hast auf 25 gesetzt und gewonnen!")
+        if even == 1 and result % 2 == 0:
+            print("Du hast auf Gerade gesetzt und gewonnen!")
+        elif odd == 1:
+            print("Du hast auf Ungerade gesetzt und gewonnen!")
 
-        if even == 1 and result == 24:
-            print("Du hast auf 24 gesetzt und gewonnen!")
+        if  one_to_eighteen == 1 and 1 <= result <= 18:
+            print("Du hast auf 1 zu 18 gesetzt und gewonnen!")
+        elif nineteen_to_thirtysix == 1 and 19 <= result <= 36:
+            print("Du hast auf 19 zu 36 gesetzt und gewonnen!")
 
-        if odd == 1 and result == 13:
-            print("Du hast auf 13 gesetzt und gewonnen!")
+        if one_to_twelve == 1 and 1 <= result <= 12:
+            print("Du hast auf 1 zu 12 gesetzt und gewonnen!")
+        elif thirteen_to_twentyfour == 1 and 13 <= result <= 24:
+            print("Du hast auf 13 zu 24 gesetzt und gewonnen!")
+        elif twentyfive_to_thirtysix == 1 and 25 <= result <= 36:
+            print("Du hast auf 25 zu 36 gesetzt und gewonnen!")
 
-        if num25 == 1 and result == 25:
-            print("Du hast auf 25 gesetzt und gewonnen!")
+        if rd_row == 1 and result % 3 == 0:
+            print("Du hast auf die dritte Reihe gesetzt und gewonnen!")
+        elif nd_row == 1 and is_2(result):
+            print("Du hast auf die zweite Reihe gesetzt und gewonnen!")
+        elif st_row == 1 and result != 0:
+            print("Du hast auf erste Reihe gesetzt und gewonnen!")
 
-        if num25 == 1 and result == 25:
-            print("Du hast auf 25 gesetzt und gewonnen!")
+    calculator()
 
 
 
@@ -543,6 +561,7 @@ while running and coins > 0:
                 ball_position = None
                 last_result = None
                 random_number()
+
 
 
     screen.fill((50, 50, 50))
