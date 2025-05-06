@@ -2,6 +2,7 @@ import pygame
 import random
 import sys
 import math
+import json
 
 # Farben
 BLACK = (0, 0, 0)
@@ -77,11 +78,30 @@ def play_spin():
     return [random.randint(1, 7) for _ in range(REEL_COUNT)]
 
 
+def load_coins():
+    try:
+        with open("../../Bank/Data/coin.json", "r") as f:
+            daten = json.load(f)
+        coins = daten["coin"]
+    except FileNotFoundError:
+        coins = 100
+        daten = {"coin": coins}
+    return coins, daten
+
+
+def save_coins(coins, daten):
+    with open("../../Bank/Data/coin.json", "w") as f:
+        daten["coin"] = coins
+        json.dump(daten, f)
+
+
 def main():
     global lever_pulled
+    coins, daten = load_coins()
+
     reels = ["-", "-", "-"]
     running = True
-    while running:
+    while running and coins > 0:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -91,7 +111,13 @@ def main():
                 elif event.key == pygame.K_SPACE and not lever_pulled:
                     reels = play_spin()
                     lever_pulled = False
+                    # Adjust coin count based on spin result
+                    if reels.count(reels[0]) == REEL_COUNT:  # Simple win condition
+                        coins += 10
+                    else:
+                        coins -= 1
 
+        # Update the game screen
         screen.fill(DARK_GRAY)
         draw_housing()
         draw_reels(reels)
@@ -99,8 +125,10 @@ def main():
         pygame.display.flip()
         clock.tick(60)
 
+    save_coins(coins, daten)
     pygame.quit()
     sys.exit()
+
 
 if __name__ == "__main__":
     main()
