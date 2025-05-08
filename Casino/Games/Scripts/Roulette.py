@@ -22,6 +22,7 @@ Y_SCALE = HEIGHT / 1080
 RADIUS = int(300 * X_SCALE)
 SLICE_ANGLE = 360 / 37
 clock = pygame.time.Clock()
+circle_pos = [WIDTH // 2, HEIGHT // 2]
 pygame.display.set_caption("Roulette")
 
 # Lade Coins
@@ -221,6 +222,32 @@ def draw_field():
 ball_visible = False
 ball_position = None
 last_result = None
+dragging = False  # Stelle sicher, dass dragging initialisiert ist
+
+
+def Coin(events):
+    global dragging, circle_pos  # Sorge dafür, dass die Variablen global sind, wenn sie innerhalb der Funktion verändert werden
+
+    circle_color = (0, 100, 255)
+    circle_radius = 40
+
+    # Kreis zeichnen
+    pygame.draw.circle(screen, circle_color, circle_pos, circle_radius)
+
+    for event in events:
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            mouse_pos = pygame.mouse.get_pos()
+            dx = mouse_pos[0] - circle_pos[0]
+            dy = mouse_pos[1] - circle_pos[1]
+            if dx * dx + dy * dy <= circle_radius * circle_radius:
+                dragging = True
+
+        elif event.type == pygame.MOUSEBUTTONUP:
+            dragging = False
+
+        elif event.type == pygame.MOUSEMOTION and dragging:
+            circle_pos = list(pygame.mouse.get_pos())
+
 
 
 def random_number():
@@ -526,7 +553,8 @@ def random_number():
 # === Spielschleife ===
 running = True
 while running and coins > 0:
-    for event in pygame.event.get():
+    events = pygame.event.get()
+    for event in events:
         if event.type == pygame.QUIT:
             running = False
         elif event.type == pygame.KEYDOWN:
@@ -538,15 +566,14 @@ while running and coins > 0:
                 last_result = None
                 random_number()
 
-
-
-
     screen.fill((50, 50, 50))
     draw_wheel()
     draw_field()
+    Coin(events)
     if ball_visible and ball_position:
         pygame.draw.circle(screen, (255, 255, 255), ball_position, 12)
     pygame.display.flip()
+
 
 print("Thanks for playing!")
 pygame.quit()
