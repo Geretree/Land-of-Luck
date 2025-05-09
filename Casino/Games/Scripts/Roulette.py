@@ -4,6 +4,7 @@ import json
 import math
 import sys
 
+
 # === Farben ===
 BLACK = (0, 0, 0)
 RED = (200, 0, 0)
@@ -222,31 +223,7 @@ def draw_field():
 ball_visible = False
 ball_position = None
 last_result = None
-dragging = False  # Stelle sicher, dass dragging initialisiert ist
 
-
-def Coin(events):
-    global dragging, circle_pos  # Sorge dafür, dass die Variablen global sind, wenn sie innerhalb der Funktion verändert werden
-
-    circle_color = (0, 100, 255)
-    circle_radius = 40
-
-    # Kreis zeichnen
-    pygame.draw.circle(screen, circle_color, circle_pos, circle_radius)
-
-    for event in events:
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            mouse_pos = pygame.mouse.get_pos()
-            dx = mouse_pos[0] - circle_pos[0]
-            dy = mouse_pos[1] - circle_pos[1]
-            if dx * dx + dy * dy <= circle_radius * circle_radius:
-                dragging = True
-
-        elif event.type == pygame.MOUSEBUTTONUP:
-            dragging = False
-
-        elif event.type == pygame.MOUSEMOTION and dragging:
-            circle_pos = list(pygame.mouse.get_pos())
 
 
 
@@ -547,7 +524,9 @@ def random_number():
 
     calculator()
 
+from chip import Chip
 
+chip = Chip("../../../Assets/Chip5.png", pos=(400, 300))
 
 
 # === Spielschleife ===
@@ -569,7 +548,8 @@ while running and coins > 0:
     screen.fill((50, 50, 50))
     draw_wheel()
     draw_field()
-    Coin(events)
+    chip.handle_event(event)
+    chip.draw(screen)
     if ball_visible and ball_position:
         pygame.draw.circle(screen, (255, 255, 255), ball_position, 12)
     pygame.display.flip()
