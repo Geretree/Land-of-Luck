@@ -526,7 +526,7 @@ def random_number():
 
 from chip import Chip
 
-chip = Chip("../../../Assets/Chip5.png", pos=(400, 300))
+chip = Chip("chip5.png", pos=(400, 300))
 
 
 # === Spielschleife ===
