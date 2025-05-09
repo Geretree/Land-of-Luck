@@ -7,7 +7,7 @@ pygame.init()
 screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
 
 # Lade das Chip-Bild
-Chip5_img = pygame.image.load("../../../Assets/Chip5.png").convert_alpha()
+Chip5_img = pygame.image.load("../../Games/Scripts/Chip5.png").convert_alpha()
 
 # Bestimme die Position des Chips (Mitte des Bildschirms)
 chip_rect = Chip5_img.get_rect(center=(screen.get_width() // 2, screen.get_height() // 2))
