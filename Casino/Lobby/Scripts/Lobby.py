@@ -3,7 +3,7 @@ import asyncio
 import pygame
 import traceback
 
-# === Farben ===
+# === Farben ====
 BLACK = (0, 0, 0)
 RED = (200, 0, 0)
 GREEN = (45, 117, 16)
