@@ -88,24 +88,47 @@ def draw_slice(angle, color, index):
     screen.blit(text, text_rect)
 
 def draw_Edge(angle):
+    # Nutze denselben Mittelwinkel wie in draw_slice
     a = math.radians((angle+5) + SLICE_ANGLE / 2)
-    x1 = CENTER[0] + 304 * X_SCALE * math.cos(a)
-    y1 = CENTER[1] + 304 * Y_SCALE * math.sin(a)
-    x2 = CENTER[0] + 200 * X_SCALE * math.cos(a)
-    y2 = CENTER[1] + 200 * Y_SCALE * math.sin(a)
-    pygame.draw.line(screen, GOLD, (x1, y1), (x2, y2), int(6 * X_SCALE))
+
+    # Skaliere die Radien basierend auf X/Y_SCALE
+    outer_radius = 300 * X_SCALE
+    inner_radius = 198 * X_SCALE  # passt zum inneren Kreis von draw_wheel()
+
+    x1 = CENTER[0] + outer_radius * math.cos(a)
+    y1 = CENTER[1] + outer_radius * math.sin(a)
+    x2 = CENTER[0] + inner_radius * math.cos(a)
+    y2 = CENTER[1] + inner_radius * math.sin(a)
+
+    # Liniendicke ebenfalls skaliert
+    line_width = max(1, int(6 * ((X_SCALE + Y_SCALE) / 2)))
+    pygame.draw.line(screen, GOLD, (x1, y1), (x2, y2), line_width)
+
+
 
 def draw_Middle(angle):
     a = math.radians(angle + SLICE_ANGLE / 2)
-    x2 = CENTER[0] + 160 * X_SCALE * math.cos(a)
-    y2 = CENTER[1] + 160 * Y_SCALE * math.sin(a)
-    pygame.draw.line(screen, GOLD, CENTER, (x2, y2), int(10 * X_SCALE))
+    avg_scale = (X_SCALE + Y_SCALE) / 2
+    inner_circle_radius = 150 * X_SCALE
+    x2 = CENTER[0] + inner_circle_radius * math.cos(a)
+    y2 = CENTER[1] + inner_circle_radius * math.sin(a)
+    line_width = max(1, int(10 * avg_scale))
+    pygame.draw.line(screen, GOLD, CENTER, (x2, y2), line_width)
+
 
 def draw_Points(angle):
+    # Winkel auf die Mitte der Scheibe
     a = math.radians(angle + SLICE_ANGLE / 2)
-    x1 = CENTER[0] + 160 * X_SCALE * math.cos(a)
-    y1 = CENTER[1] + 160 * Y_SCALE * math.sin(a)
-    pygame.draw.circle(screen, GOLD, (x1, y1), int(20 * X_SCALE))
+    avg_scale = (X_SCALE + Y_SCALE) / 2
+    # Den Punkt knapp außerhalb des innersten Gold-Rings platzieren
+    point_radius_from_center = 160 * X_SCALE
+    # Position berechnen
+    x1 = CENTER[0] + point_radius_from_center * math.cos(a)
+    y1 = CENTER[1] + point_radius_from_center * math.sin(a)
+    # Punktradius responsive
+    dot_radius = max(1, int(20 * avg_scale))
+    pygame.draw.circle(screen, GOLD, (int(x1), int(y1)), dot_radius)
+
 
 def draw_field():
     def scale(x, y):
@@ -524,9 +547,15 @@ def random_number():
 
     calculator()
 
-from chip import Chip
+from Casino.Bank.Scripts.chip import Chip
 
-chip = Chip("chip5.png", pos=(400, 300))
+screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)  # oder feste Größe
+screen_size = screen.get_size()
+chip = Chip("../../Bank/Scripts/Chip5.png", (100, 100), screen_size)
+
+# Wenn du die Fenstergröße änderst:
+new_size = screen.get_size()
+chip.update_radius(new_size)
 
 
 # === Spielschleife ===
