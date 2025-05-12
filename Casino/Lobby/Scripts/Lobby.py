@@ -1,27 +1,16 @@
-# Casino/Lobby/Scripts/Lobby.py
-import asyncio
 import pygame
-import traceback
 
-# === Farben ===
-BLACK = (0, 0, 0)
-RED = (200, 0, 0)
-GREEN = (45, 117, 16)
-WHITE = (255, 255, 255)
-BROWN = (156, 86, 12)
-GOLD = (215, 162, 20)
-
-# —————————————————————————————————————————————————————————————
-# Globale Variablen und Initialisierung
-# —————————————————————————————————————————————————————————————
 pygame.init()
+
+# Bildschirm im Vollbildmodus
 screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
 clock = pygame.time.Clock()
+
 win_width, win_height = pygame.display.get_surface().get_size()
 
-# Spieler
+# Spielergröße
 peter_size = pygame.Vector2(60, 60)
-peter_pos = pygame.Vector2()
+peter_pos = pygame.Vector2()  # Initialisierung, später gesetzt
 
 # Bandit
 bandit_size = pygame.Vector2(100, 100)
@@ -31,7 +20,7 @@ bandit_pos = pygame.Vector2(200, 200)
 roulette_size = pygame.Vector2(200, 200)
 roulette_pos = pygame.Vector2(200, 400)
 
-# Assets laden mit ursprünglichen Pfaden
+# Bild einmal laden und skalieren
 peter_image = pygame.image.load("../Images/Happy_Man.png")
 peter_image = pygame.transform.scale(peter_image, peter_size)
 
@@ -41,114 +30,94 @@ bandit_image = pygame.transform.scale(bandit_image, bandit_size)
 roulette_image = pygame.image.load("../Images/Roulette_table.png")
 roulette_image = pygame.transform.scale(roulette_image, roulette_size)
 
+# Spielstatus
 running = True
-dt = 0.0
+dt = 0
 
-# —————————————————————————————————————————————————————————————
-# Spiel-Funktionen
-# —————————————————————————————————————————————————————————————
-def reset_game():
-    global peter_pos
-    peter_pos = pygame.Vector2(
-        win_width/2 - peter_size.x/2,
-        win_height/2 - peter_size.y/2
-    )
-
-
-def bandit_action():
+# Aktionen bei Kollisionen
+def bandit():
     print("Peter hat den Banditen berührt!")
     from Casino.Games.Scripts import Einarmiger_Bandit
-    Einarmiger_Bandit()
+    Einarmiger_Bandit
 
 
-def roulette_action():
+def roulette():
     print("Peter hat das Roulette berührt!")
     from Casino.Games.Scripts import Roulette
-    Roulette()
+    Roulette
 
 
+
+# Spielerposition zurücksetzen
+def reset_game():
+    global peter_pos
+    peter_pos = pygame.Vector2(win_width / 2 - peter_size.x / 2, win_height / 2 - peter_size.y / 2)
+
+# Spielerbewegung und Zeichnung
 def peter_player():
-    global running, dt
     screen.blit(peter_image, (int(peter_pos.x), int(peter_pos.y)))
 
     keys = pygame.key.get_pressed()
-    if keys[pygame.K_q]: running = False
     speed = 300
-    if keys[pygame.K_w]: peter_pos.y -= speed * dt
-    if keys[pygame.K_s]: peter_pos.y += speed * dt
-    if keys[pygame.K_a]: peter_pos.x -= speed * dt
-    if keys[pygame.K_d]: peter_pos.x += speed * dt
+    if keys[pygame.K_w]:
+        peter_pos.y -= speed * dt
+    if keys[pygame.K_s]:
+        peter_pos.y += speed * dt
+    if keys[pygame.K_a]:
+        peter_pos.x -= speed * dt
+    if keys[pygame.K_d]:
+        peter_pos.x += speed * dt
+    if keys[pygame.K_q]:
+        global running
+        running = False
 
-    # Bildschirmgrenzen prüfen
-    if (peter_pos.x < 0 or peter_pos.x + peter_size.x > win_width or
-        peter_pos.y < 0 or peter_pos.y + peter_size.y > win_height):
+    # Bildschirmgrenzen überprüfen
+    if (peter_pos.y < 0 or peter_pos.y + peter_size.y > win_height or
+            peter_pos.x < 0 or peter_pos.x + peter_size.x > win_width):
         reset_game()
 
-
+# Gegner & Objekte zeichnen
 def spawn_bandit():
     screen.blit(bandit_image, bandit_pos)
-
 
 def spawn_roulette():
     screen.blit(roulette_image, roulette_pos)
 
-
+# Kollisionserkennung
 def check_collision():
-    global dt
-    rect_p = pygame.Rect(peter_pos.x, peter_pos.y, *peter_size)
-    rect_b = pygame.Rect(bandit_pos.x, bandit_pos.y, *bandit_size)
-    rect_r = pygame.Rect(roulette_pos.x, roulette_pos.y, *roulette_size)
-    keys = pygame.key.get_pressed()
+    peter_rect = pygame.Rect(peter_pos.x, peter_pos.y, *peter_size)
+    bandit_rect = pygame.Rect(bandit_pos.x, bandit_pos.y, *bandit_size)
+    roulette_rect = pygame.Rect(roulette_pos.x, roulette_pos.y, *roulette_size)
 
-    if rect_p.colliderect(rect_b) and keys[pygame.K_SPACE]:
-        bandit_action()
-        reset_game()
-    if rect_p.colliderect(rect_r) and keys[pygame.K_SPACE]:
-        roulette_action()
-        reset_game()
+    if peter_rect.colliderect(bandit_rect):
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_SPACE]:
+            bandit()
+            reset_game()
 
-# —————————————————————————————————————————————————————————————
-# Der asynchrone Game-Loop mit Debugging
-# —————————————————————————————————————————————————————————————
-async def game():
-    global running, dt
-    # Sicherstellen, dass running True ist
-    running = True
-    reset_game()
-    print("Game started, running initial:", running)
-    try:
-        while running:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    running = False
+    if peter_rect.colliderect(roulette_rect):
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_SPACE]:
+            roulette()
+            reset_game()
 
-            # Roter Hintergrund-Test zum Debuggen
-            screen.fill((WHITE))
-            spawn_bandit()
-            spawn_roulette()
-            peter_player()
-            check_collision()
+# Initialisierung
+reset_game()
 
-            pygame.display.flip()
-            dt = clock.tick(60) / 1000.0
-            print(f"Tick: running={running}, dt={dt}")
+# Hauptspielschleife
+while running:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
 
-            await asyncio.sleep(0)
-    except Exception:
-        traceback.print_exc()
-    finally:
-        # Deaktiviert, damit Browser nicht sofort schließt
-        # pygame.quit()
-        print("Game exited")
+    screen.fill("white")
 
+    spawn_bandit()
+    spawn_roulette()
+    peter_player()
+    check_collision()
 
-# Entry-Point in main.py
-# Casino/Lobby/Scripts/main.py
-import asyncio
-from Lobby import game
+    pygame.display.flip()
+    dt = clock.tick(60) / 1000
 
-def main():
-    asyncio.run(game())
-
-if __name__ == "__main__":
-    main()
+pygame.quit()

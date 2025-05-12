@@ -4,6 +4,7 @@ import json
 import math
 import sys
 
+
 # === Farben ===
 BLACK = (0, 0, 0)
 RED = (200, 0, 0)
@@ -22,6 +23,7 @@ Y_SCALE = HEIGHT / 1080
 RADIUS = int(300 * X_SCALE)
 SLICE_ANGLE = 360 / 37
 clock = pygame.time.Clock()
+circle_pos = [WIDTH // 2, HEIGHT // 2]
 pygame.display.set_caption("Roulette")
 
 # Lade Coins
@@ -221,6 +223,8 @@ def draw_field():
 ball_visible = False
 ball_position = None
 last_result = None
+
+
 
 
 def random_number():
@@ -520,13 +524,16 @@ def random_number():
 
     calculator()
 
+from Casino.Bank.Scripts.chip import Chip
 
+chip = Chip("../../Bank/Data/Chip5.png", pos=(400, 300))
 
 
 # === Spielschleife ===
 running = True
 while running and coins > 0:
-    for event in pygame.event.get():
+    events = pygame.event.get()
+    for event in events:
         if event.type == pygame.QUIT:
             running = False
         elif event.type == pygame.KEYDOWN:
@@ -538,15 +545,15 @@ while running and coins > 0:
                 last_result = None
                 random_number()
 
-
-
-
     screen.fill((50, 50, 50))
     draw_wheel()
     draw_field()
+    chip.handle_event(event)
+    chip.draw(screen)
     if ball_visible and ball_position:
         pygame.draw.circle(screen, (255, 255, 255), ball_position, 12)
     pygame.display.flip()
+
 
 print("Thanks for playing!")
 pygame.quit()

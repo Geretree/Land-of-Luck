@@ -22,18 +22,32 @@ x = 100
 y = 100
 card_rect = pygame.Rect(x, y, card_width, card_height)
 
+def generate_card():
+    mittelpunkte = [
+        (130, 130),
+        (x + card_width - 30, y + card_height - 30),
+        (x + card_width - 30, 130),
+        (130, y + card_height - 30)
+    ]
 
 
-def Form():
-    pygame.draw.circle(screen, BLACK, (x + 30, y + 30), 10)
-    pygame.draw.circle(screen, BLACK, (x + 40, y + 20), 10)
-    pygame.draw.circle(screen, BLACK, (x + 50, y + 30), 10)
-    pygame.draw.polygon(screen, BLACK, [
-        (x+38, y+20),
-        (x+42, y+20),
-        (x+42, y+50),
-        (x+38, y+50)
-    ])
+
+    def Ecke(center_x, center_y, size=30):
+        half = size // 2
+        points = [
+            (center_x, center_y - half - 5),  # oben
+            (center_x + half, center_y),  # rechts
+            (center_x, center_y + half + 5),  # unten
+            (center_x - half, center_y)  # links
+        ]
+        pygame.draw.polygon(screen, RED, points)
+
+
+
+    for center in mittelpunkte:
+        Ecke(*center)  # *center entpackt (x, y)
+
+
 # Hauptloop
 running = True
 while running:
@@ -50,7 +64,7 @@ while running:
     # Karte zeichnen
     pygame.draw.rect(screen, WHITE, card_rect)
     pygame.draw.rect(screen, BLACK, card_rect, 2)  # schwarzer Rahmen
-    Form()
+    generate_card()
     pygame.display.flip()
 
 pygame.quit()
