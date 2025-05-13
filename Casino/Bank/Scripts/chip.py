@@ -1,12 +1,19 @@
 import pygame
 
 class Chip:
-    def __init__(self, image_path, pos, radius=40):
-        self.image = pygame.image.load(image_path).convert_alpha()
-        self.radius = radius
-        self.image = pygame.transform.smoothscale(self.image, (radius * 2, radius * 2))
+    def __init__(self, image_path, pos, screen_size, radius_factor=0.035):
+
+        self.image_path = image_path
         self.pos = list(pos)  # [x, y]
+        self.radius_factor = radius_factor
         self.dragging = False
+        self.update_radius(screen_size)
+
+    def update_radius(self, screen_size):
+        min_dim = min(screen_size)
+        self.radius = int(min_dim * self.radius_factor)
+        raw_image = pygame.image.load(self.image_path).convert_alpha()
+        self.image = pygame.transform.smoothscale(raw_image, (self.radius * 2, self.radius * 2))
 
     def handle_event(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN:
@@ -19,7 +26,7 @@ class Chip:
             self.dragging = False
 
         elif event.type == pygame.MOUSEMOTION and self.dragging:
-            self.pos = list(pygame.mouse.get_pos())  # <-- HIER!
+            self.pos = list(pygame.mouse.get_pos())
 
     def draw(self, screen):
         screen.blit(self.image, (self.pos[0] - self.radius, self.pos[1] - self.radius))
