@@ -10,6 +10,7 @@ class Chip:
         self.update_radius(screen_size)
 
     def update_radius(self, screen_size):
+
         min_dim = min(screen_size)
         self.radius = int(min_dim * self.radius_factor)
         raw_image = pygame.image.load(self.image_path).convert_alpha()
