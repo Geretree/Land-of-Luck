@@ -3,9 +3,14 @@ import asyncio
 import pygame
 import traceback
 
-# —————————————————————————————————————————————————————————————
-# Globale Variablen und Initialisierung
-# —————————————————————————————————————————————————————————————
+# === Farben ===
+BLACK = (0, 0, 0)
+RED = (200, 0, 0)
+GREEN = (45, 117, 16)
+WHITE = (255, 255, 255)
+BROWN = (156, 86, 12)
+GOLD = (215, 162, 20)
+
 pygame.init()
 screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
 clock = pygame.time.Clock()
@@ -115,7 +120,7 @@ async def game():
                     running = False
 
             # Roter Hintergrund-Test zum Debuggen
-            screen.fill((255, 0, 0))
+            screen.fill(WHITE)
             spawn_bandit()
             spawn_roulette()
             peter_player()

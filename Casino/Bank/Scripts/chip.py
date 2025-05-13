@@ -2,9 +2,7 @@ import pygame
 
 class Chip:
     def __init__(self, image_path, pos, screen_size, radius_factor=0.035):
-        """
-        radius_factor: Anteil der kleineren Bildschirmdimension (z. B. 0.05 = 5 %)
-        """
+
         self.image_path = image_path
         self.pos = list(pos)  # [x, y]
         self.radius_factor = radius_factor
@@ -12,7 +10,7 @@ class Chip:
         self.update_radius(screen_size)
 
     def update_radius(self, screen_size):
-        """Berechnet den Radius und skaliert das Bild basierend auf der Bildschirmgröße."""
+
         min_dim = min(screen_size)
         self.radius = int(min_dim * self.radius_factor)
         raw_image = pygame.image.load(self.image_path).convert_alpha()

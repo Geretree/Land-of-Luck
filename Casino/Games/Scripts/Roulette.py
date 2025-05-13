@@ -87,9 +87,10 @@ def draw_slice(angle, color, index):
     text_rect = text.get_rect(center=(x, y))
     screen.blit(text, text_rect)
 
+
 def draw_Edge(angle):
     # Nutze denselben Mittelwinkel wie in draw_slice
-    a = math.radians((angle+5) + SLICE_ANGLE / 2)
+    a = math.radians((angle + 5) + SLICE_ANGLE / 2)
 
     # Skaliere die Radien basierend auf X/Y_SCALE
     outer_radius = 300 * X_SCALE
@@ -103,7 +104,6 @@ def draw_Edge(angle):
     # Liniendicke ebenfalls skaliert
     line_width = max(1, int(6 * ((X_SCALE + Y_SCALE) / 2)))
     pygame.draw.line(screen, GOLD, (x1, y1), (x2, y2), line_width)
-
 
 
 def draw_Middle(angle):
@@ -128,7 +128,6 @@ def draw_Points(angle):
     # Punktradius responsive
     dot_radius = max(1, int(20 * avg_scale))
     pygame.draw.circle(screen, GOLD, (int(x1), int(y1)), dot_radius)
-
 
 def draw_field():
     def scale(x, y):
@@ -548,14 +547,14 @@ def random_number():
     calculator()
 
 from Casino.Bank.Scripts.chip import Chip
-
 screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)  # oder feste Größe
 screen_size = screen.get_size()
-chip = Chip("../../Bank/Scripts/Chip5.png", (100, 100), screen_size)
+chip = Chip("../../Bank/Data/Chip5.png", (400, 300), screen_size)
 
 # Wenn du die Fenstergröße änderst:
 new_size = screen.get_size()
 chip.update_radius(new_size)
+
 
 
 # === Spielschleife ===
