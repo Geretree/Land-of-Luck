@@ -2,6 +2,7 @@
 import asyncio
 import pygame
 import traceback
+import sys
 
 # === Farben ===
 BLACK = (0, 0, 0)
@@ -29,13 +30,13 @@ roulette_size = pygame.Vector2(200, 200)
 roulette_pos = pygame.Vector2(200, 400)
 
 # Assets laden mit ursprünglichen Pfaden
-peter_image = pygame.image.load("../Images/Happy_Man.png")
+peter_image = pygame.image.load("../../Images/Happy_Man.png")
 peter_image = pygame.transform.scale(peter_image, peter_size)
 
-bandit_image = pygame.image.load("../Images/bandit.png")
+bandit_image = pygame.image.load("../../Images/bandit.png")
 bandit_image = pygame.transform.scale(bandit_image, bandit_size)
 
-roulette_image = pygame.image.load("../Images/Roulette_table.png")
+roulette_image = pygame.image.load("../../Images/Roulette_table.png")
 roulette_image = pygame.transform.scale(roulette_image, roulette_size)
 
 running = True
@@ -58,10 +59,12 @@ def bandit_action():
     Einarmiger_Bandit()
 
 
+
 def roulette_action():
     print("Peter hat das Roulette berührt!")
     from Casino.Games.Scripts import Roulette
     Roulette()
+
 
 
 def peter_player():
@@ -99,10 +102,14 @@ def check_collision():
 
     if rect_p.colliderect(rect_b) and keys[pygame.K_SPACE]:
         bandit_action()
-        reset_game()
+        pygame.quit()
+        sys.exit()
+
     if rect_p.colliderect(rect_r) and keys[pygame.K_SPACE]:
         roulette_action()
-        reset_game()
+        pygame.quit()
+        sys.exit()
+
 
 # —————————————————————————————————————————————————————————————
 # Der asynchrone Game-Loop mit Debugging
@@ -128,7 +135,6 @@ async def game():
 
             pygame.display.flip()
             dt = clock.tick(60) / 1000.0
-            print(f"Tick: running={running}, dt={dt}")
 
             await asyncio.sleep(0)
     except Exception:
@@ -142,7 +148,7 @@ async def game():
 # Entry-Point in main.py
 # Casino/Lobby/Scripts/main.py
 import asyncio
-from Lobby import game
+
 
 def main():
     asyncio.run(game())

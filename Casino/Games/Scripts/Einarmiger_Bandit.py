@@ -15,11 +15,12 @@ BLUE = (0, 0, 255)
 
 # Pygame Setup
 pygame.init()
-SCREEN_WIDTH, SCREEN_HEIGHT = 800, 600
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+# Fullscreen aktivieren, automatisch auf die native Auflösung:
+screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+# Falls du die aktuelle Auflösung brauchst:
+SCREEN_WIDTH, SCREEN_HEIGHT = screen.get_size()
 pygame.display.set_caption("Einarmiger Bandit")
 clock = pygame.time.Clock()
-
 # Center
 CENTER = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
 
@@ -103,53 +104,52 @@ def detect_patterns(values):
 
     return colors
 
-def main():
-    global lever_pulled, lever_angle, spin_start_time, spin_locked, spin_lock_time
 
-    reels = ["-", "-", "-"]
-    colors = [WHITE] * 3
-    running = True
 
-    while running:
-        now = pygame.time.get_ticks()
+reels = ["-", "-", "-"]
+colors = [WHITE] * 3
+running = True
 
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
-                    running = False
-                elif event.key == pygame.K_SPACE and not lever_pulled and not spin_locked:
-                    lever_pulled = True
-                    spin_start_time = now
-                    lever_angle = -45  # Hebel nach unten
-                    reels = play_spin()
-                    colors = detect_patterns(reels)
+while running:
+    now = pygame.time.get_ticks()
 
-        # Hebel langsam zurück
-        if lever_pulled and now - spin_start_time > SPIN_DURATION:
-            lever_angle = 45
-            lever_pulled = False
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                 running = False
+            elif event.key == pygame.K_SPACE and not lever_pulled and not spin_locked:
+                lever_pulled = True
+                spin_start_time = now
+                lever_angle = -45  # Hebel nach unten
+                reels = play_spin()
+                colors = detect_patterns(reels)
 
-        # Spin-Sperre aufheben nach 5 Sekunden
-        if spin_locked and now - spin_lock_time > SPIN_LOCK_DURATION:
-            spin_locked = False
+    # Hebel langsam zurück
+    if lever_pulled and now - spin_start_time > SPIN_DURATION:
+        lever_angle = 45
+        lever_pulled = False
 
-        screen.fill(DARK_GRAY)
-        draw_housing()
-        draw_reels(reels, colors)
-        draw_lever()
+    # Spin-Sperre aufheben nach 5 Sekunden
+    if spin_locked and now - spin_lock_time > SPIN_LOCK_DURATION:
+        spin_locked = False
 
-        # Hinweis auf Wartezeit
-        if spin_locked:
-            wait_text = font.render("Warte...", True, BLUE)
-            screen.blit(wait_text, (CENTER[0] - wait_text.get_width() // 2, REEL_Y + REEL_HEIGHT + 30))
+    screen.fill(DARK_GRAY)
+    draw_housing()
+    draw_reels(reels, colors)
+    draw_lever()
 
-        pygame.display.flip()
-        clock.tick(60)
+    # Hinweis auf Wartezeit
+    if spin_locked:
+        wait_text = font.render("Warte...", True, BLUE)
+        screen.blit(wait_text, (CENTER[0] - wait_text.get_width() // 2, REEL_Y + REEL_HEIGHT + 30))
 
-    pygame.quit()
-    sys.exit()
+    pygame.display.flip()
+    clock.tick(60)
 
-if __name__ == "__main__":
-    main()
+pygame.quit()
+sys.exit()
+
+
+

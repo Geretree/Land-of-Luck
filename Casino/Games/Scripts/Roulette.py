@@ -555,34 +555,59 @@ chip = Chip("../../Bank/Data/Chip5.png", (400, 300), screen_size)
 new_size = screen.get_size()
 chip.update_radius(new_size)
 
-
+import asyncio
 
 # === Spielschleife ===
 running = True
 while running and coins > 0:
-    events = pygame.event.get()
-    for event in events:
+    for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+
+        # Nur bei Tastendruck hat event.key
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 running = False
+
+                # Wechsle ins Lobby-Modul (async-Funktion korrekt starten)
+                from Casino.Lobby.Scripts.Lobby import game
+
+                # Versuche, den gerade laufenden Loop zu holen...
+                try:
+                    loop = asyncio.get_running_loop()
+                except RuntimeError:
+                    # ...klappt nicht, also starte game() ganz normal als neuen Loop
+                    asyncio.run(game())
+                else:
+                    # ...klappt, also plane game() im bestehenden Loop
+                    loop.create_task(game())
+
+                break  # verlasse die for-Schleife; while endet durch running=False
+
             elif event.key == pygame.K_SPACE:
+                # Neue Kugel drehen
                 ball_visible = False
                 ball_position = None
                 last_result = None
                 random_number()
 
+        # Chip-Drag & Drop (immer behandeln)
+        chip.handle_event(event)
+
+    # Frame zeichnen
     screen.fill((50, 50, 50))
     draw_wheel()
     draw_field()
-    chip.handle_event(event)
     chip.draw(screen)
     if ball_visible and ball_position:
-        pygame.draw.circle(screen, (255, 255, 255), ball_position, 12)
+        pygame.draw.circle(screen, WHITE, ball_position, 12)
+
     pygame.display.flip()
+    clock.tick(60)
 
-
+# Nach Verlassen der Schleife: Pygame beenden
 print("Thanks for playing!")
 pygame.quit()
 sys.exit()
+
+
