@@ -1,5 +1,6 @@
 import pygame
 import random
+import math
 
 
 # Farben
@@ -24,15 +25,113 @@ card_rect = pygame.Rect(x, y, card_width, card_height)
 
 def generate_card():
     mittelpunkte = [
-        (130, 130),
-        (x + card_width - 30, y + card_height - 30),
-        (x + card_width - 30, 130),
-        (130, y + card_height - 30)
+        (x + (card_width * 0.1), y + (card_height * 0.1)),
+        (x + (card_width * 0.1), y + (card_height * 0.9)),
+        (x + (card_width * 0.9), y + (card_height * 0.1)),
+        (x + (card_width * 0.9), y + (card_height * 0.9))
     ]
 
+    posforone = [
+        (x +(card_width/2),y +(card_height/2))
+    ]
+    posfortwo = [
+        (x + (card_width / 2), y + (card_height * 0.15)),
+        (x + (card_width / 2), y + (card_height * 0.85))
+    ]
+    posforthree = [
+        (x + (card_width / 2), y + (card_height * 0.15)),
+        (x + (card_width / 2), y + (card_height / 2)),
+        (x + (card_width / 2), y + (card_height * 0.85))
+    ]
+    posforfour = [
+        (x + (card_width * 0.3), y + (card_height * 0.15)),
+        (x + (card_width * 0.7), y + (card_height * 0.15)),
+        (x + (card_width * 0.3), y + (card_height * 0.85)),
+        (x + (card_width * 0.7), y + (card_height * 0.85))
+    ]
+    posforfive = [
+        (x + (card_width * 0.3), y + (card_height * 0.15)),
+        (x + (card_width * 0.7), y + (card_height * 0.15)),
+        (x + (card_width / 2), y + (card_height / 2)),
+        (x + (card_width * 0.3), y + (card_height * 0.85)),
+        (x + (card_width * 0.7), y + (card_height * 0.85))
+    ]
+    posforsix = [
+        (x + (card_width * 0.3), y + (card_height * 0.15)),
+        (x + (card_width * 0.3), y + (card_height / 2)),
+        (x + (card_width * 0.3), y + (card_height * 0.85)),
+        (x + (card_width * 0.7), y + (card_height * 0.15)),
+        (x + (card_width * 0.7), y + (card_height / 2)),
+        (x + (card_width * 0.7), y + (card_height * 0.85))
+    ]
+    posforseven = [
+        (x + (card_width * 0.3), y + (card_height * 0.15)),
+        (x + (card_width * 0.3), y + (card_height / 2)),
+        (x + (card_width * 0.3), y + (card_height * 0.85)),
+        (x + (card_width / 2), y + ((card_height * 0.85) - (card_height * 0.525))),
+        (x + (card_width * 0.7), y + (card_height * 0.15)),
+        (x + (card_width * 0.7), y + (card_height / 2)),
+        (x + (card_width * 0.7), y + (card_height * 0.85))
+    ]
+    posforeight = [
+        (x + (card_width * 0.3), y + (card_height * 0.15)),
+        (x + (card_width * 0.3), y + (card_height / 2)),
+        (x + (card_width * 0.3), y + (card_height * 0.85)),
+        (x + (card_width / 2), y + ((card_height * 0.85) - (card_height * 0.525))),
+        (x + (card_width * 0.7), y + (card_height * 0.15)),
+        (x + (card_width * 0.7), y + (card_height / 2)),
+        (x + (card_width * 0.7), y + (card_height * 0.85)),
+        (x + (card_width / 2), y + ((card_height * 0.85) - (card_height * 0.175)))
+    ]
+    posfornine = [
+        (x + (card_width * 0.3), y + (card_height * 0.15)),
+        (x + (card_width * 0.3), y + (card_height * 0.38333)),
+        (x + (card_width * 0.7), y + (card_height * 0.15)),
+        (x + (card_width * 0.7), y + (card_height * 0.38333)),
+        (x + (card_width / 2), y + (card_height / 2)),
+        (x + (card_width * 0.3), y + (card_height * 0.85)),
+        (x + (card_width * 0.3), y + (card_height * 0.61666)),
+        (x + (card_width * 0.7), y + (card_height * 0.85)),
+        (x + (card_width * 0.7), y + (card_height * 0.61666))
+    ]
+    posforten = [
+        (x + (card_width * 0.3), y + (card_height * 0.15)),
+        (x + (card_width * 0.3), y + (card_height * 0.38333)),
+        (x + (card_width * 0.7), y + (card_height * 0.15)),
+        (x + (card_width * 0.7), y + (card_height * 0.38333)),
+        (x + (card_width / 2), y + (card_height * 0.2625)),
+        (x + (card_width / 2), y + (card_height * 0.7375)),
+        (x + (card_width * 0.3), y + (card_height * 0.85)),
+        (x + (card_width * 0.3), y + (card_height * 0.61666)),
+        (x + (card_width * 0.7), y + (card_height * 0.85)),
+        (x + (card_width * 0.7), y + (card_height * 0.61666))
+    ]
+
+    wahl = random.randint(1, 10)
+    if wahl == 1:
+        kartenzahl = posforone
+    elif wahl == 2:
+        kartenzahl = posfortwo
+    elif wahl == 3:
+        kartenzahl = posforthree
+    elif wahl == 4:
+        kartenzahl = posforfour
+    elif wahl == 5:
+        kartenzahl = posforfive
+    elif wahl == 6:
+        kartenzahl = posforsix
+    elif wahl == 7:
+        kartenzahl = posforseven
+    elif wahl == 8:
+        kartenzahl = posforeight
+    elif wahl == 9:
+        kartenzahl = posfornine
+    elif wahl == 10:
+        kartenzahl = posforten
 
 
-    def Ecke(center_x, center_y, size=30):
+
+    def Ecke(center_x, center_y):
         half = size // 2
         points = [
             (center_x, center_y - half - 5),  # oben
@@ -45,14 +144,19 @@ def generate_card():
 
 
     for center in mittelpunkte:
+        size = 30
+        Ecke(*center)  # *center entpackt (x, y)
+
+    for center in kartenzahl:
+        size = 40
         Ecke(*center)  # *center entpackt (x, y)
 
 
 # Hauptloop
+screen.fill(GREEN)
+
 running = True
 while running:
-    screen.fill(GREEN)  # Hintergrundfarbe
-
     # Events
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -60,11 +164,16 @@ while running:
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 running = False
+            elif event.key == pygame.K_SPACE:
+                # Karte zeichnen
+                pygame.draw.rect(screen, WHITE, card_rect)
+                pygame.draw.rect(screen, BLACK, card_rect, 2)
 
-    # Karte zeichnen
-    pygame.draw.rect(screen, WHITE, card_rect)
-    pygame.draw.rect(screen, BLACK, card_rect, 2)  # schwarzer Rahmen
-    generate_card()
+                generate_card()
+
+    # Hintergrund
+
+
     pygame.display.flip()
 
 pygame.quit()

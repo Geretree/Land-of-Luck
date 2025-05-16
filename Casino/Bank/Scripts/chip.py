@@ -31,3 +31,15 @@ class Chip:
 
     def draw(self, screen):
         screen.blit(self.image, (self.pos[0] - self.radius, self.pos[1] - self.radius))
+
+    def collides_with_rect(self, rect: pygame.Rect) -> bool:
+        # Finde den nächsten Punkt auf dem Rechteck relativ zum Kreiszentrum
+        closest_x = max(rect.left, min(self.pos[0], rect.right))
+        closest_y = max(rect.top, min(self.pos[1], rect.bottom))
+
+        # Berechne die Distanz vom Kreiszentrum zum nächstgelegenen Punkt
+        dx = self.pos[0] - closest_x
+        dy = self.pos[1] - closest_y
+
+        # Prüfe, ob diese Distanz kleiner oder gleich dem Radius ist
+        return dx * dx + dy * dy <= self.radius * self.radius

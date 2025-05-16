@@ -26,6 +26,8 @@ clock = pygame.time.Clock()
 circle_pos = [WIDTH // 2, HEIGHT // 2]
 pygame.display.set_caption("Roulette")
 
+
+
 # Lade Coins
 try:
     with open("../../Bank/Data/coin.json", "r") as f:
@@ -129,9 +131,10 @@ def draw_Points(angle):
     dot_radius = max(1, int(20 * avg_scale))
     pygame.draw.circle(screen, GOLD, (int(x1), int(y1)), dot_radius)
 
+def scale(x, y):
+    return int(x * X_SCALE), int(y * Y_SCALE)
+
 def draw_field():
-    def scale(x, y):
-        return int(x * X_SCALE), int(y * Y_SCALE)
 
     def draw_line(start, end, width):
         pygame.draw.line(screen, WHITE, scale(*start), scale(*end), int(width * X_SCALE))
@@ -250,12 +253,6 @@ last_result = None
 
 
 def random_number():
-    rand_index = random.randint(0, 36)
-    wheel_numbers = [
-        0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27,
-        13, 36, 11, 30, 8, 23, 10, 5, 24, 16, 33, 1,
-        20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26, 0
-    ]
 
     # Dynamischer Radius auf Basis der Bildschirmhöhe
     base_ball_radius = 187  # Ursprünglich bei Höhe 900
@@ -348,172 +345,152 @@ def random_number():
 
 
     def calculator():
-        num0 = 0
+        posx_start = 935
+        posy_start = 310
 
-        num1 = 0
-        num2 = 0
-        num3 = 0
-        num4 = 0
-        num5 = 0
-        num6 = 0
-        num7 = 0
-        num8 = 0
-        num9 = 0
-        num10 = 0
-        num11 = 0
-        num12 = 0
-        num13 = 0
-        num14 = 0
-        num15 = 0
-        num16 = 0
-        num17 = 0
-        num18 = 0
-        num19 = 0
-        num20 = 0
-        num21 = 0
-        num22 = 0
-        num23 = 0
-        num24 = 0
-        num25 = 0
-        num26 = 0
-        num27 = 0
-        num28 = 0
-        num29 = 0
-        num30 = 0
-        num31 = 0
-        num32 = 0
-        num33 = 0
-        num34 = 0
-        num35 = 0
-        num36 = 0
+        # Field Hitboxes
+        hitbox0 = pygame.Rect(*scale(860, 240), 100, 100)
+        # Beispiel rows (6x6) zum Kontext
+        hitbox3 = pygame.Rect((posx_start + (75 * 0), posy_start + (100 * 0), 100, 100))
+        hitbox6 = pygame.Rect((posx_start + (75 * 1), posy_start + (100 * 0), 100, 100))
+        hitbox9 = pygame.Rect((posx_start + (75 * 2), posy_start + (100 * 0), 100, 100))
+        hitbox12 = pygame.Rect((posx_start + (75 * 3), posy_start + (100 * 0), 100, 100))
+        hitbox15 = pygame.Rect((posx_start + (75 * 4), posy_start + (100 * 0), 100, 100))
+        hitbox18 = pygame.Rect((posx_start + (75 * 5), posy_start + (100 * 0), 100, 100))
+        hitbox21 = pygame.Rect((posx_start + (75 * 6), posy_start + (100 * 0), 100, 100))
+        hitbox24 = pygame.Rect((posx_start + (75 * 7), posy_start + (100 * 0), 100, 100))
+        hitbox27 = pygame.Rect((posx_start + (75 * 8), posy_start + (100 * 0), 100, 100))
+        hitbox30 = pygame.Rect((posx_start + (75 * 9), posy_start + (100 * 0), 100, 100))
+        hitbox33 = pygame.Rect((posx_start + (75 * 10), posy_start + (100 * 0), 100, 100))
+        hitbox36 = pygame.Rect((posx_start + (75 * 11), posy_start + (100 * 0), 100, 100))
+        hitbox2 = pygame.Rect((posx_start + (75 * 0), posy_start + (100 * 1), 100, 101))
+        hitbox5 = pygame.Rect((posx_start + (75 * 1), posy_start + (100 * 1), 100, 101))
+        hitbox8 = pygame.Rect((posx_start + (75 * 2), posy_start + (100 * 1), 100, 101))
+        hitbox11 = pygame.Rect((posx_start + (75 * 3), posy_start + (100 * 1), 100, 101))
+        hitbox14 = pygame.Rect((posx_start + (75 * 4), posy_start + (100 * 1), 100, 101))
+        hitbox17 = pygame.Rect((posx_start + (75 * 5), posy_start + (100 * 1), 100, 101))
+        hitbox20 = pygame.Rect((posx_start + (75 * 6), posy_start + (100 * 1), 100, 101))
+        hitbox23 = pygame.Rect((posx_start + (75 * 7), posy_start + (100 * 1), 100, 101))
+        hitbox26 = pygame.Rect((posx_start + (75 * 8), posy_start + (100 * 1), 100, 101))
+        hitbox29 = pygame.Rect((posx_start + (75 * 9), posy_start + (100 * 1), 100, 101))
+        hitbox32 = pygame.Rect((posx_start + (75 * 10), posy_start + (100 * 1), 100, 101))
+        hitbox35 = pygame.Rect((posx_start + (75 * 11), posy_start + (100 * 1), 100, 101))
+        hitbox1 = pygame.Rect((posx_start + (75 * 0), posy_start + (100 * 2), 100, 100))
+        hitbox4 = pygame.Rect((posx_start + (75 * 1), posy_start + (100 * 2), 100, 100))
+        hitbox7 = pygame.Rect((posx_start + (75 * 2), posy_start + (100 * 2), 100, 100))
+        hitbox10 = pygame.Rect((posx_start + (75 * 3), posy_start + (100 * 2), 100, 100))
+        hitbox13 = pygame.Rect((posx_start + (75 * 4), posy_start + (100 * 2), 100, 100))
+        hitbox16 = pygame.Rect((posx_start + (75 * 5), posy_start + (100 * 2), 100, 100))
+        hitbox19 = pygame.Rect((posx_start + (75 * 6), posy_start + (100 * 2), 100, 100))
+        hitbox22 = pygame.Rect((posx_start + (75 * 7), posy_start + (100 * 2), 100, 100))
+        hitbox25 = pygame.Rect((posx_start + (75 * 8), posy_start + (100 * 2), 100, 100))
+        hitbox28 = pygame.Rect((posx_start + (75 * 9), posy_start + (100 * 2), 100, 100))
+        hitbox31 = pygame.Rect((posx_start + (75 * 10), posy_start + (100 * 2), 100, 100))
+        hitbox34 = pygame.Rect((posx_start + (75 * 11), posy_start + (100 * 2), 100, 100))
 
+        num0 = 100
+        numbers = 0
         red = 0
         black = 0
-
         even = 0
         odd = 0
-
         one_to_eighteen = 0
         nineteen_to_thirtysix = 0
-
         one_to_twelve = 0
         thirteen_to_twentyfour = 0
         twentyfive_to_thirtysix = 0
-
         st_row = 0
         nd_row = 0
         rd_row = 0
+        print(hitbox3)
 
-        if num0 == 1 and result == 0:
+        if chip.collides_with_rect(hitbox0):
+            num0 = 0
+            print("yes")
+        elif chip.collides_with_rect(hitbox1):
+            numbers = 1
+        elif chip.collides_with_rect(hitbox2):
+            numbers = 2
+        elif chip.collides_with_rect(hitbox3):
+            numbers = 3
+            print("yes")
+        elif chip.collides_with_rect(hitbox4):
+            numbers = 4
+        elif chip.collides_with_rect(hitbox5):
+            numbers = 5
+        elif chip.collides_with_rect(hitbox6):
+            numbers = 6
+        elif chip.collides_with_rect(hitbox7):
+            numbers = 7
+        elif chip.collides_with_rect(hitbox8):
+            numbers = 8
+        elif chip.collides_with_rect(hitbox9):
+            numbers = 9
+        elif chip.collides_with_rect(hitbox10):
+            numbers = 10
+        elif chip.collides_with_rect(hitbox11):
+            numbers = 11
+        elif chip.collides_with_rect(hitbox12):
+            numbers = 12
+        elif chip.collides_with_rect(hitbox13):
+            numbers = 13
+        elif chip.collides_with_rect(hitbox14):
+            numbers = 14
+        elif chip.collides_with_rect(hitbox15):
+            numbers = 15
+        elif chip.collides_with_rect(hitbox16):
+            numbers = 16
+        elif chip.collides_with_rect(hitbox17):
+            numbers = 17
+        elif chip.collides_with_rect(hitbox18):
+            numbers = 18
+        elif chip.collides_with_rect(hitbox19):
+            numbers = 19
+        elif chip.collides_with_rect(hitbox20):
+            numbers = 20
+        elif chip.collides_with_rect(hitbox21):
+            numbers = 21
+        elif chip.collides_with_rect(hitbox22):
+            numbers = 22
+        elif chip.collides_with_rect(hitbox23):
+            numbers = 23
+        elif chip.collides_with_rect(hitbox24):
+            numbers = 24
+        elif chip.collides_with_rect(hitbox25):
+            numbers = 25
+        elif chip.collides_with_rect(hitbox26):
+            numbers = 26
+        elif chip.collides_with_rect(hitbox27):
+            numbers = 27
+        elif chip.collides_with_rect(hitbox28):
+            numbers = 28
+        elif chip.collides_with_rect(hitbox29):
+            numbers = 29
+        elif chip.collides_with_rect(hitbox30):
+            numbers = 30
+        elif chip.collides_with_rect(hitbox31):
+            numbers = 31
+        elif chip.collides_with_rect(hitbox32):
+            numbers = 32
+        elif chip.collides_with_rect(hitbox33):
+            numbers = 33
+        elif chip.collides_with_rect(hitbox34):
+            numbers = 34
+        elif chip.collides_with_rect(hitbox35):
+            numbers = 35
+        elif chip.collides_with_rect(hitbox36):
+            numbers = 36
+
+
+
+
+
+
+        if num0 == 0 and result == 0:
             print("Du hast auf 0 gesetzt und gewonnen!")
 
-        if num1 == 1 and result == 1:
-            print("Du hast auf 1 gesetzt und gewonnen!")
-
-        if num2 == 1 and result == 2:
-            print("Du hast auf 2 gesetzt und gewonnen!")
-
-        if num3 == 1 and result == 3:
-            print("Du hast auf 3 gesetzt und gewonnen!")
-
-        if num4 == 1 and result == 4:
-            print("Du hast auf 4 gesetzt und gewonnen!")
-
-        if num5 == 1 and result == 5:
-            print("Du hast auf 5 gesetzt und gewonnen!")
-
-        if num6 == 1 and result == 6:
-            print("Du hast auf 6 gesetzt und gewonnen!")
-
-        if num7 == 1 and result == 7:
-            print("Du hast auf 7 gesetzt und gewonnen!")
-
-        if num8 == 1 and result == 8:
-            print("Du hast auf 8 gesetzt und gewonnen!")
-
-        if num9 == 1 and result == 9:
-            print("Du hast auf 9 gesetzt und gewonnen!")
-
-        if num10 == 1 and result == 10:
-            print("Du hast auf 10 gesetzt und gewonnen!")
-
-        if num11 == 1 and result == 11:
-            print("Du hast auf 11 gesetzt und gewonnen!")
-
-        if num12 == 1 and result == 12:
-            print("Du hast auf 12 gesetzt und gewonnen!")
-
-        if num13 == 1 and result == 13:
-            print("Du hast auf 13 gesetzt und gewonnen!")
-
-        if num14 == 1 and result == 14:
-            print("Du hast auf 14 gesetzt und gewonnen!")
-
-        if num15 == 1 and result == 15:
-            print("Du hast auf 15 gesetzt und gewonnen!")
-
-        if num16 == 1 and result == 16:
-            print("Du hast auf 16 gesetzt und gewonnen!")
-
-        if num17 == 1 and result == 17:
-            print("Du hast auf 17 gesetzt und gewonnen!")
-
-        if num18 == 1 and result == 18:
-            print("Du hast auf 18 gesetzt und gewonnen!")
-
-        if num19 == 1 and result == 19:
-            print("Du hast auf 19 gesetzt und gewonnen!")
-
-        if num20 == 1 and result == 20:
-            print("Du hast auf 20 gesetzt und gewonnen!")
-
-        if num21 == 1 and result == 21:
-            print("Du hast auf 21 gesetzt und gewonnen!")
-
-        if num22 == 1 and result == 22:
-            print("Du hast auf 22 gesetzt und gewonnen!")
-
-        if num23 == 1 and result == 23:
-            print("Du hast auf 23 gesetzt und gewonnen!")
-
-        if num24 == 1 and result == 24:
-            print("Du hast auf 24 gesetzt und gewonnen!")
-
-        if num25 == 1 and result == 25:
-            print("Du hast auf 25 gesetzt und gewonnen!")
-
-        if num26 == 1 and result == 26:
-            print("Du hast auf 26 gesetzt und gewonnen!")
-
-        if num27 == 1 and result == 27:
-            print("Du hast auf 27 gesetzt und gewonnen!")
-
-        if num28 == 1 and result == 28:
-            print("Du hast auf 28 gesetzt und gewonnen!")
-
-        if num29 == 1 and result == 29:
-            print("Du hast auf 29 gesetzt und gewonnen!")
-
-        if num30 == 1 and result == 30:
-            print("Du hast auf 30 gesetzt und gewonnen!")
-
-        if num31 == 1 and result == 31:
-            print("Du hast auf 31 gesetzt und gewonnen!")
-
-        if num32 == 1 and result == 32:
-            print("Du hast auf 32 gesetzt und gewonnen!")
-
-        if num33 == 1 and result == 33:
-            print("Du hast auf 33 gesetzt und gewonnen!")
-
-        if num34 == 1 and result == 34:
-            print("Du hast auf 34 gesetzt und gewonnen!")
-
-        if num35 == 1 and result == 35:
-            print("Du hast auf 35 gesetzt und gewonnen!")
-
-        if num36 == 1 and result == 36:
-            print("Du hast auf 36 gesetzt und gewonnen!")
+        if numbers == result and 1 <= result <= 36:
+            print(f"Du hast auf {result} gesetzt und gewonnen!")
 
         if red == 1 and is_red(result):
             print("Du hast auf Rot gesetzt und gewonnen!")
@@ -549,7 +526,7 @@ def random_number():
 from Casino.Bank.Scripts.chip import Chip
 screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)  # oder feste Größe
 screen_size = screen.get_size()
-chip = Chip("../../Bank/Data/Chip5.png", (400, 300), screen_size)
+chip = Chip("../../Bank/Data/Chip5.png", (300, 300), screen_size)
 
 # Wenn du die Fenstergröße änderst:
 new_size = screen.get_size()
@@ -591,8 +568,11 @@ while running and coins > 0:
                 last_result = None
                 random_number()
 
+
         # Chip-Drag & Drop (immer behandeln)
         chip.handle_event(event)
+
+
 
     # Frame zeichnen
     screen.fill((50, 50, 50))
