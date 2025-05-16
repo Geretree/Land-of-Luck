@@ -39,5 +39,10 @@ python Lobby.py
 ### Roulette
 1. To move the coin drag and drop it with the mouse.
 2. To start the game press [SPACE]
-3. 
+3. To exit press [ESC]
+
+### Slot Machine
+1. To start the game press [SPACE]
+2. To exit press [ESC]
+
 
