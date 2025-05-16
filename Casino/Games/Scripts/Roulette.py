@@ -508,55 +508,55 @@ def random_number():
         verlusst = 0
 
         if num0 == 0 and result == 0:
-            print("Du hast auf 0 gesetzt und gewonnen!")
+            print("You bet on 0 and won!")
             gewinn += 5 * 36
 
         if numbers == result and 1 <= result <= 36:
-            print(f"Du hast auf {result} gesetzt und gewonnen!")
+            print(f"You bet on {result} and won!")
             gewinn += 5 * 36
 
         if red == 1 and is_red(result):
-            print("Du hast auf Rot gesetzt und gewonnen!")
+            print("You bet on Red and won!")
             gewinn += 5 * 2
         elif black == 1 and result != 0:
-            print("Du hast auf Schwarz gesetzt und gewonnen!")
+            print("You bet on Black and won!")
             gewinn += 5 * 2
 
         if even == 1 and result % 2 == 0:
-            print("Du hast auf Gerade gesetzt und gewonnen!")
+            print("You bet on Even and won!")
             gewinn += 5 * 2
-        elif odd == 1 and result %2 != 0:
-            print("Du hast auf Ungerade gesetzt und gewonnen!")
+        elif odd == 1 and result % 2 != 0:
+            print("You bet on Odd and won!")
             gewinn += 5 * 2
 
-        if  one_to_eighteen == 1 and 1 <= result <= 18:
-            print("Du hast auf 1 zu 18 gesetzt und gewonnen!")
+        if one_to_eighteen == 1 and 1 <= result <= 18:
+            print("You bet on 1 to 18 and won!")
             gewinn += 5 * 2
         elif nineteen_to_thirtysix == 1 and 19 <= result <= 36:
-            print("Du hast auf 19 zu 36 gesetzt und gewonnen!")
+            print("You bet on 19 to 36 and won!")
             gewinn += 5 * 2
 
         if one_to_twelve == 1 and 1 <= result <= 12:
-            print("Du hast auf 1 zu 12 gesetzt und gewonnen!")
+            print("You bet on 1 to 12 and won!")
             gewinn += 5 * 3
         elif thirteen_to_twentyfour == 1 and 13 <= result <= 24:
-            print("Du hast auf 13 zu 24 gesetzt und gewonnen!")
+            print("You bet on 13 to 24 and won!")
             gewinn += 5 * 3
         elif twentyfive_to_thirtysix == 1 and 25 <= result <= 36:
-            print("Du hast auf 25 zu 36 gesetzt und gewonnen!")
+            print("You bet on 25 to 36 and won!")
             gewinn += 5 * 3
 
         if rd_row == 1 and result % 3 == 0:
-            print("Du hast auf die dritte Reihe gesetzt und gewonnen!")
+            print("You bet on the third row and won!")
             gewinn += 5 * 3
         elif nd_row == 1 and is_2(result):
-            print("Du hast auf die zweite Reihe gesetzt und gewonnen!")
+            print("You bet on the second row and won!")
             gewinn += 5 * 3
         elif st_row == 1 and result != 0:
-            print("Du hast auf erste Reihe gesetzt und gewonnen!")
+            print("You bet on the first row and won!")
             gewinn += 5 * 3
-        gewinn -= 5
 
+        gewinn -= 5
 
         daten["coin"] += gewinn
         with open("../../Bank/Data/coin.json", "w") as f:
@@ -567,10 +567,10 @@ def random_number():
 
 
 
-from Casino.Bank.Scripts.chip import Chip
+from Casino.Bank.Scripts.chip import Chip5
 screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)  # oder feste Größe
 screen_size = screen.get_size()
-chip = Chip("../../Bank/Data/Chip5.png", (300, 300), screen_size)
+chip = Chip5("../../Bank/Data/Chip5.png", (300, 300), screen_size)
 
 # Wenn du die Fenstergröße änderst:
 new_size = screen.get_size()
