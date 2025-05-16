@@ -9,9 +9,10 @@
 4. Klick these two checkboxes: <br>
 ![image](https://github.com/user-attachments/assets/1ff2c439-3390-4fae-af03-8f325b67dbd8)
 5. Klick install now.
+6. Press Close
 
 ## Install the Game
-1. Download the latest release File
+1. Download the latest release file on the right under Releases -> Tag
 2. Unzip the file.
 - Hint: https://support.microsoft.com/en-us/windows/zip-and-unzip-files-8d28fa72-f2f9-712f-67df-f80cf89fd4e5
 3. Open the folder:<br>
