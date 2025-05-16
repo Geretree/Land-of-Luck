@@ -27,7 +27,6 @@ circle_pos = [WIDTH // 2, HEIGHT // 2]
 pygame.display.set_caption("Roulette")
 
 
-
 # Lade Coins
 try:
     with open("../../Bank/Data/coin.json", "r") as f:
@@ -36,6 +35,7 @@ try:
 except FileNotFoundError:
     coins = 100
     daten = {"coin": coins}
+
 
 numbers = [
     0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 30,
@@ -244,6 +244,12 @@ def draw_field():
             draw_color(rows[row][col], posx, posy, numbers[row][col])
             posx += 75
 
+    with open("../../Bank/Data/coin.json", "r") as f:
+        daten = json.load(f)
+    coins = daten["coin"]
+    font = pygame.font.SysFont(None, int(36 * Y_SCALE))
+    screen.blit(font.render(f"Coins: {coins}" , True, WHITE), scale(10, 10))
+
 #---------------------------------SPIELFUNKTION-------------------------------
 ball_visible = False
 ball_position = None
@@ -303,90 +309,78 @@ def random_number():
     last_result = result
     ball_visible = True  # Ball soll nun angezeigt bleiben
 
-    print(result)
-    if result == 0:
-        print("ZERO")
-    else:
-        if result % 2 == 0:
-            print("EVEN")
-        else:
-            print("ODD")
+
+    def calculator():
 
         def is_red(n): return n in {
             1, 3, 5, 7, 9, 12, 14, 16, 18,
             19, 21, 23, 25, 27, 30, 32, 34, 36
         }
-
         def is_2(n): return n in {
             2, 5, 8, 11, 14, 17, 20, 23,
             26, 29, 32, 35
         }
 
-        print("RED" if is_red(result) else "BLACK")
-
-        if 1 <= result <= 18:
-            print("1 to 18")
-        elif 19 <= result <= 36:
-            print("19 to 36")
-
-        if 1 <= result <= 12:
-            print("1st 12")
-        elif 13 <= result <= 24:
-            print("2nd 12")
-        elif 25 <= result <= 36:
-            print("3rd 12")
-
-        if result % 3 == 0:
-            print("3rd Row")
-        elif is_2(result):
-            print("2nd Row")
-        elif result != 0:
-            print("1st Row")
-
-
-    def calculator():
-        posx_start = 935
-        posy_start = 310
+        posx_start = 935 + 30
+        posy_start = 310 - 160
 
         # Field Hitboxes
-        hitbox0 = pygame.Rect(*scale(860, 240), 100, 100)
-        # Beispiel rows (6x6) zum Kontext
-        hitbox3 = pygame.Rect((posx_start + (75 * 0), posy_start + (100 * 0), 100, 100))
-        hitbox6 = pygame.Rect((posx_start + (75 * 1), posy_start + (100 * 0), 100, 100))
-        hitbox9 = pygame.Rect((posx_start + (75 * 2), posy_start + (100 * 0), 100, 100))
-        hitbox12 = pygame.Rect((posx_start + (75 * 3), posy_start + (100 * 0), 100, 100))
-        hitbox15 = pygame.Rect((posx_start + (75 * 4), posy_start + (100 * 0), 100, 100))
-        hitbox18 = pygame.Rect((posx_start + (75 * 5), posy_start + (100 * 0), 100, 100))
-        hitbox21 = pygame.Rect((posx_start + (75 * 6), posy_start + (100 * 0), 100, 100))
-        hitbox24 = pygame.Rect((posx_start + (75 * 7), posy_start + (100 * 0), 100, 100))
-        hitbox27 = pygame.Rect((posx_start + (75 * 8), posy_start + (100 * 0), 100, 100))
-        hitbox30 = pygame.Rect((posx_start + (75 * 9), posy_start + (100 * 0), 100, 100))
-        hitbox33 = pygame.Rect((posx_start + (75 * 10), posy_start + (100 * 0), 100, 100))
-        hitbox36 = pygame.Rect((posx_start + (75 * 11), posy_start + (100 * 0), 100, 100))
-        hitbox2 = pygame.Rect((posx_start + (75 * 0), posy_start + (100 * 1), 100, 101))
-        hitbox5 = pygame.Rect((posx_start + (75 * 1), posy_start + (100 * 1), 100, 101))
-        hitbox8 = pygame.Rect((posx_start + (75 * 2), posy_start + (100 * 1), 100, 101))
-        hitbox11 = pygame.Rect((posx_start + (75 * 3), posy_start + (100 * 1), 100, 101))
-        hitbox14 = pygame.Rect((posx_start + (75 * 4), posy_start + (100 * 1), 100, 101))
-        hitbox17 = pygame.Rect((posx_start + (75 * 5), posy_start + (100 * 1), 100, 101))
-        hitbox20 = pygame.Rect((posx_start + (75 * 6), posy_start + (100 * 1), 100, 101))
-        hitbox23 = pygame.Rect((posx_start + (75 * 7), posy_start + (100 * 1), 100, 101))
-        hitbox26 = pygame.Rect((posx_start + (75 * 8), posy_start + (100 * 1), 100, 101))
-        hitbox29 = pygame.Rect((posx_start + (75 * 9), posy_start + (100 * 1), 100, 101))
-        hitbox32 = pygame.Rect((posx_start + (75 * 10), posy_start + (100 * 1), 100, 101))
-        hitbox35 = pygame.Rect((posx_start + (75 * 11), posy_start + (100 * 1), 100, 101))
-        hitbox1 = pygame.Rect((posx_start + (75 * 0), posy_start + (100 * 2), 100, 100))
-        hitbox4 = pygame.Rect((posx_start + (75 * 1), posy_start + (100 * 2), 100, 100))
-        hitbox7 = pygame.Rect((posx_start + (75 * 2), posy_start + (100 * 2), 100, 100))
-        hitbox10 = pygame.Rect((posx_start + (75 * 3), posy_start + (100 * 2), 100, 100))
-        hitbox13 = pygame.Rect((posx_start + (75 * 4), posy_start + (100 * 2), 100, 100))
-        hitbox16 = pygame.Rect((posx_start + (75 * 5), posy_start + (100 * 2), 100, 100))
-        hitbox19 = pygame.Rect((posx_start + (75 * 6), posy_start + (100 * 2), 100, 100))
-        hitbox22 = pygame.Rect((posx_start + (75 * 7), posy_start + (100 * 2), 100, 100))
-        hitbox25 = pygame.Rect((posx_start + (75 * 8), posy_start + (100 * 2), 100, 100))
-        hitbox28 = pygame.Rect((posx_start + (75 * 9), posy_start + (100 * 2), 100, 100))
-        hitbox31 = pygame.Rect((posx_start + (75 * 10), posy_start + (100 * 2), 100, 100))
-        hitbox34 = pygame.Rect((posx_start + (75 * 11), posy_start + (100 * 2), 100, 100))
+        #numbers
+        hitbox0 = pygame.Rect(*scale(860, 240), 20, 20)
+        hitbox3 = pygame.Rect((posx_start + (75 * 0), posy_start + (100 * 0), 10, 10))
+        hitbox6 = pygame.Rect((posx_start + (75 * 1), posy_start + (100 * 0), 10, 10))
+        hitbox9 = pygame.Rect((posx_start + (75 * 2), posy_start + (100 * 0), 10, 10))
+        hitbox12 = pygame.Rect((posx_start + (75 * 3), posy_start + (100 * 0), 10, 10))
+        hitbox15 = pygame.Rect((posx_start + (75 * 4), posy_start + (100 * 0), 10, 10))
+        hitbox18 = pygame.Rect((posx_start + (75 * 5), posy_start + (100 * 0), 10, 10))
+        hitbox21 = pygame.Rect((posx_start + (75 * 6), posy_start + (100 * 0), 10, 10))
+        hitbox24 = pygame.Rect((posx_start + (75 * 7), posy_start + (100 * 0), 10, 10))
+        hitbox27 = pygame.Rect((posx_start + (75 * 8), posy_start + (100 * 0), 10, 10))
+        hitbox30 = pygame.Rect((posx_start + (75 * 9), posy_start + (100 * 0), 10, 10))
+        hitbox33 = pygame.Rect((posx_start + (75 * 10), posy_start + (100 * 0), 10, 10))
+        hitbox36 = pygame.Rect((posx_start + (75 * 11), posy_start + (100 * 0), 10, 10))
+        hitbox2 = pygame.Rect((posx_start + (75 * 0), posy_start + (100 * 1), 10, 10))
+        hitbox5 = pygame.Rect((posx_start + (75 * 1), posy_start + (100 * 1), 10, 10))
+        hitbox8 = pygame.Rect((posx_start + (75 * 2), posy_start + (100 * 1), 10, 10))
+        hitbox11 = pygame.Rect((posx_start + (75 * 3), posy_start + (100 * 1), 10, 10))
+        hitbox14 = pygame.Rect((posx_start + (75 * 4), posy_start + (100 * 1), 10, 10))
+        hitbox17 = pygame.Rect((posx_start + (75 * 5), posy_start + (100 * 1), 10, 10))
+        hitbox20 = pygame.Rect((posx_start + (75 * 6), posy_start + (100 * 1), 10, 10))
+        hitbox23 = pygame.Rect((posx_start + (75 * 7), posy_start + (100 * 1), 10, 10))
+        hitbox26 = pygame.Rect((posx_start + (75 * 8), posy_start + (100 * 1), 10, 10))
+        hitbox29 = pygame.Rect((posx_start + (75 * 9), posy_start + (100 * 1), 10, 10))
+        hitbox32 = pygame.Rect((posx_start + (75 * 10), posy_start + (100 * 1), 10, 10))
+        hitbox35 = pygame.Rect((posx_start + (75 * 11), posy_start + (100 * 1), 10, 10))
+        hitbox1 = pygame.Rect((posx_start + (75 * 0), posy_start + (100 * 2), 10, 10))
+        hitbox4 = pygame.Rect((posx_start + (75 * 1), posy_start + (100 * 2), 10, 10))
+        hitbox7 = pygame.Rect((posx_start + (75 * 2), posy_start + (100 * 2), 10, 10))
+        hitbox10 = pygame.Rect((posx_start + (75 * 3), posy_start + (100 * 2), 10, 10))
+        hitbox13 = pygame.Rect((posx_start + (75 * 4), posy_start + (100 * 2), 10, 10))
+        hitbox16 = pygame.Rect((posx_start + (75 * 5), posy_start + (100 * 2), 10, 10))
+        hitbox19 = pygame.Rect((posx_start + (75 * 6), posy_start + (100 * 2), 10, 10))
+        hitbox22 = pygame.Rect((posx_start + (75 * 7), posy_start + (100 * 2), 10, 10))
+        hitbox25 = pygame.Rect((posx_start + (75 * 8), posy_start + (100 * 2), 10, 10))
+        hitbox28 = pygame.Rect((posx_start + (75 * 9), posy_start + (100 * 2), 10, 10))
+        hitbox31 = pygame.Rect((posx_start + (75 * 10), posy_start + (100 * 2), 10, 10))
+        hitbox34 = pygame.Rect((posx_start + (75 * 11), posy_start + (100 * 2), 10, 10))
+        #colors
+        hitboxred = pygame.Rect(1300, 550, 10, 10)
+        hitboxblack = pygame.Rect(1450, 550, 10, 10)
+        #even vs odd
+        hitboxeven = pygame.Rect(1095, 520, int(110 * X_SCALE), int(60 * Y_SCALE))
+        hitboxodd = pygame.Rect(1545, 520, int(110 * X_SCALE), int(60 * Y_SCALE))
+        #1 to 18 vs 19 to 36
+        hitbox1to18 = pygame.Rect(945, 520, int(110 * X_SCALE), int(60 * Y_SCALE))
+        hitbox19to36 = pygame.Rect(1695, 520, int(110 * X_SCALE), int(60 * Y_SCALE))
+        #1st 12 vs 2nd 12 vs 3rd 12
+        hitbox1st12 = pygame.Rect(945, 420, int(260 * X_SCALE), int(60 * Y_SCALE))
+        hitbox2nd12 = pygame.Rect(1245, 420, int(260 * X_SCALE), int(60 * Y_SCALE))
+        hitbox3rd12 = pygame.Rect(1545, 420, int(260 * X_SCALE), int(60 * Y_SCALE))
+        #rows
+        hitbox2to1_1 = pygame.Rect(1845, 320, int(35 * X_SCALE), int(60 * Y_SCALE))
+        hitbox2to1_2 = pygame.Rect(1845, 220, int(35 * X_SCALE), int(60 * Y_SCALE))
+        hitbox2to1_3 = pygame.Rect(1845, 120, int(35 * X_SCALE), int(60 * Y_SCALE))
+
 
         num0 = 100
         numbers = 0
@@ -402,18 +396,18 @@ def random_number():
         st_row = 0
         nd_row = 0
         rd_row = 0
-        print(hitbox3)
 
+
+        #collide check
+        #numbers
         if chip.collides_with_rect(hitbox0):
             num0 = 0
-            print("yes")
         elif chip.collides_with_rect(hitbox1):
             numbers = 1
         elif chip.collides_with_rect(hitbox2):
             numbers = 2
         elif chip.collides_with_rect(hitbox3):
             numbers = 3
-            print("yes")
         elif chip.collides_with_rect(hitbox4):
             numbers = 4
         elif chip.collides_with_rect(hitbox5):
@@ -480,48 +474,98 @@ def random_number():
             numbers = 35
         elif chip.collides_with_rect(hitbox36):
             numbers = 36
+        #colors
+        elif chip.collides_with_rect(hitboxred):
+            red = 1
+        elif chip.collides_with_rect(hitboxblack):
+            black = 1
+        #even vs odd
+        elif chip.collides_with_rect(hitboxeven):
+            even = 1
+        elif chip.collides_with_rect(hitboxodd):
+            odd = 1
+        #1 to 18 vs 19 to 36
+        elif chip.collides_with_rect(hitbox1to18):
+            one_to_eighteen = 1
+        elif chip.collides_with_rect(hitbox19to36):
+            nineteen_to_thirtysix = 1
+        # 1st 12 vs 2nd 12 vs 3rd 12
+        elif chip.collides_with_rect(hitbox1st12):
+            one_to_twelve = 1
+        elif chip.collides_with_rect(hitbox2nd12):
+            thirteen_to_twentyfour = 1
+        elif chip.collides_with_rect(hitbox3rd12):
+            twentyfive_to_thirtysix = 1
+        #rows
+        elif chip.collides_with_rect(hitbox2to1_1):
+            st_row = 1
+        elif chip.collides_with_rect(hitbox2to1_2):
+            nd_row = 1
+        elif chip.collides_with_rect(hitbox2to1_3):
+            rd_row = 1
 
-
-
-
-
+        gewinn = 0
+        verlusst = 0
 
         if num0 == 0 and result == 0:
             print("Du hast auf 0 gesetzt und gewonnen!")
+            gewinn += 5 * 36
 
         if numbers == result and 1 <= result <= 36:
             print(f"Du hast auf {result} gesetzt und gewonnen!")
+            gewinn += 5 * 36
 
         if red == 1 and is_red(result):
             print("Du hast auf Rot gesetzt und gewonnen!")
-        elif black == 1:
+            gewinn += 5 * 2
+        elif black == 1 and result != 0:
             print("Du hast auf Schwarz gesetzt und gewonnen!")
+            gewinn += 5 * 2
 
         if even == 1 and result % 2 == 0:
             print("Du hast auf Gerade gesetzt und gewonnen!")
-        elif odd == 1:
+            gewinn += 5 * 2
+        elif odd == 1 and result %2 != 0:
             print("Du hast auf Ungerade gesetzt und gewonnen!")
+            gewinn += 5 * 2
 
         if  one_to_eighteen == 1 and 1 <= result <= 18:
             print("Du hast auf 1 zu 18 gesetzt und gewonnen!")
+            gewinn += 5 * 2
         elif nineteen_to_thirtysix == 1 and 19 <= result <= 36:
             print("Du hast auf 19 zu 36 gesetzt und gewonnen!")
+            gewinn += 5 * 2
 
         if one_to_twelve == 1 and 1 <= result <= 12:
             print("Du hast auf 1 zu 12 gesetzt und gewonnen!")
+            gewinn += 5 * 3
         elif thirteen_to_twentyfour == 1 and 13 <= result <= 24:
             print("Du hast auf 13 zu 24 gesetzt und gewonnen!")
+            gewinn += 5 * 3
         elif twentyfive_to_thirtysix == 1 and 25 <= result <= 36:
             print("Du hast auf 25 zu 36 gesetzt und gewonnen!")
+            gewinn += 5 * 3
 
         if rd_row == 1 and result % 3 == 0:
             print("Du hast auf die dritte Reihe gesetzt und gewonnen!")
+            gewinn += 5 * 3
         elif nd_row == 1 and is_2(result):
             print("Du hast auf die zweite Reihe gesetzt und gewonnen!")
+            gewinn += 5 * 3
         elif st_row == 1 and result != 0:
             print("Du hast auf erste Reihe gesetzt und gewonnen!")
+            gewinn += 5 * 3
+        gewinn -= 5
 
+
+        daten["coin"] += gewinn
+        with open("../../Bank/Data/coin.json", "w") as f:
+            json.dump(daten, f, indent=4)
+    print(result)
     calculator()
+
+
+
 
 from Casino.Bank.Scripts.chip import Chip
 screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)  # oder feste Größe
@@ -567,6 +611,7 @@ while running and coins > 0:
                 ball_position = None
                 last_result = None
                 random_number()
+
 
 
         # Chip-Drag & Drop (immer behandeln)
