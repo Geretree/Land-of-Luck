@@ -12,7 +12,8 @@
 6. Press Close
 
 ## Install the Game
-1. Download the latest release under the following link: https://github.com/Geretree/Land-of-Luck/releases
+1. Download the latest release under the following link: https://github.com/Geretree/Land-of-Luck/releases<br>
+![{16E6BD99-C114-41B6-B97B-4B94E2CE6234}](https://github.com/user-attachments/assets/e2d99cef-f21d-414a-a2e6-2c35798b3584)
 
 3. Unzip the file.
 - Hint: https://support.microsoft.com/en-us/windows/zip-and-unzip-files-8d28fa72-f2f9-712f-67df-f80cf89fd4e5
