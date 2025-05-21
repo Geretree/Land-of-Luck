@@ -397,112 +397,56 @@ def random_number():
         nd_row = 0
         rd_row = 0
 
+        number_hitboxes = [
+            hitbox0, hitbox1, hitbox2, hitbox3, hitbox4, hitbox5,
+            hitbox6, hitbox7, hitbox8, hitbox9, hitbox10, hitbox11,
+            hitbox12, hitbox13, hitbox14, hitbox15, hitbox16, hitbox17,
+            hitbox18, hitbox19, hitbox20, hitbox21, hitbox22, hitbox23,
+            hitbox24, hitbox25, hitbox26, hitbox27, hitbox28, hitbox29,
+            hitbox30, hitbox31, hitbox32, hitbox33, hitbox34, hitbox35, hitbox36
+        ]
 
-        #collide check
-        #numbers
-        if chip.collides_with_rect(hitbox0):
-            num0 = 0
-        elif chip.collides_with_rect(hitbox1):
-            numbers = 1
-        elif chip.collides_with_rect(hitbox2):
-            numbers = 2
-        elif chip.collides_with_rect(hitbox3):
-            numbers = 3
-        elif chip.collides_with_rect(hitbox4):
-            numbers = 4
-        elif chip.collides_with_rect(hitbox5):
-            numbers = 5
-        elif chip.collides_with_rect(hitbox6):
-            numbers = 6
-        elif chip.collides_with_rect(hitbox7):
-            numbers = 7
-        elif chip.collides_with_rect(hitbox8):
-            numbers = 8
-        elif chip.collides_with_rect(hitbox9):
-            numbers = 9
-        elif chip.collides_with_rect(hitbox10):
-            numbers = 10
-        elif chip.collides_with_rect(hitbox11):
-            numbers = 11
-        elif chip.collides_with_rect(hitbox12):
-            numbers = 12
-        elif chip.collides_with_rect(hitbox13):
-            numbers = 13
-        elif chip.collides_with_rect(hitbox14):
-            numbers = 14
-        elif chip.collides_with_rect(hitbox15):
-            numbers = 15
-        elif chip.collides_with_rect(hitbox16):
-            numbers = 16
-        elif chip.collides_with_rect(hitbox17):
-            numbers = 17
-        elif chip.collides_with_rect(hitbox18):
-            numbers = 18
-        elif chip.collides_with_rect(hitbox19):
-            numbers = 19
-        elif chip.collides_with_rect(hitbox20):
-            numbers = 20
-        elif chip.collides_with_rect(hitbox21):
-            numbers = 21
-        elif chip.collides_with_rect(hitbox22):
-            numbers = 22
-        elif chip.collides_with_rect(hitbox23):
-            numbers = 23
-        elif chip.collides_with_rect(hitbox24):
-            numbers = 24
-        elif chip.collides_with_rect(hitbox25):
-            numbers = 25
-        elif chip.collides_with_rect(hitbox26):
-            numbers = 26
-        elif chip.collides_with_rect(hitbox27):
-            numbers = 27
-        elif chip.collides_with_rect(hitbox28):
-            numbers = 28
-        elif chip.collides_with_rect(hitbox29):
-            numbers = 29
-        elif chip.collides_with_rect(hitbox30):
-            numbers = 30
-        elif chip.collides_with_rect(hitbox31):
-            numbers = 31
-        elif chip.collides_with_rect(hitbox32):
-            numbers = 32
-        elif chip.collides_with_rect(hitbox33):
-            numbers = 33
-        elif chip.collides_with_rect(hitbox34):
-            numbers = 34
-        elif chip.collides_with_rect(hitbox35):
-            numbers = 35
-        elif chip.collides_with_rect(hitbox36):
-            numbers = 36
-        #colors
-        elif chip.collides_with_rect(hitboxred):
-            red = 1
-        elif chip.collides_with_rect(hitboxblack):
-            black = 1
-        #even vs odd
-        elif chip.collides_with_rect(hitboxeven):
-            even = 1
-        elif chip.collides_with_rect(hitboxodd):
-            odd = 1
-        #1 to 18 vs 19 to 36
-        elif chip.collides_with_rect(hitbox1to18):
-            one_to_eighteen = 1
-        elif chip.collides_with_rect(hitbox19to36):
-            nineteen_to_thirtysix = 1
-        # 1st 12 vs 2nd 12 vs 3rd 12
-        elif chip.collides_with_rect(hitbox1st12):
-            one_to_twelve = 1
-        elif chip.collides_with_rect(hitbox2nd12):
-            thirteen_to_twentyfour = 1
-        elif chip.collides_with_rect(hitbox3rd12):
-            twentyfive_to_thirtysix = 1
-        #rows
-        elif chip.collides_with_rect(hitbox2to1_1):
-            st_row = 1
-        elif chip.collides_with_rect(hitbox2to1_2):
-            nd_row = 1
-        elif chip.collides_with_rect(hitbox2to1_3):
-            rd_row = 1
+        for chip in chip5_chips:
+            # Zahlenfelder
+            for i, hitbox in enumerate(number_hitboxes):
+                if chip.collides_with_rect(hitbox):
+                    print(f"{chip.name} liegt auf Zahl {i}")
+                    numbers = i
+                    break  # Kein weiteres Feld prüfen
+
+            # Farben
+            if chip.collides_with_rect(hitboxred):
+                red = 1
+            elif chip.collides_with_rect(hitboxblack):
+                black = 1
+
+            # Gerade/Ungerade
+            if chip.collides_with_rect(hitboxeven):
+                even = 1
+            elif chip.collides_with_rect(hitboxodd):
+                odd = 1
+
+            # 1–18 vs 19–36
+            if chip.collides_with_rect(hitbox1to18):
+                one_to_eighteen = 1
+            elif chip.collides_with_rect(hitbox19to36):
+                nineteen_to_thirtysix = 1
+
+            # Dutzende
+            if chip.collides_with_rect(hitbox1st12):
+                one_to_twelve = 1
+            elif chip.collides_with_rect(hitbox2nd12):
+                thirteen_to_twentyfour = 1
+            elif chip.collides_with_rect(hitbox3rd12):
+                twentyfive_to_thirtysix = 1
+
+            # Reihen
+            if chip.collides_with_rect(hitbox2to1_1):
+                st_row = 1
+            elif chip.collides_with_rect(hitbox2to1_2):
+                nd_row = 1
+            elif chip.collides_with_rect(hitbox2to1_3):
+                rd_row = 1
 
         gewinn = 0
         verlusst = 0
@@ -522,7 +466,7 @@ def random_number():
             print("You bet on Black and won!")
             gewinn += 5 * 2
 
-        if even == 1 and result % 2 == 0:
+        if even == 1 and result % 2 == 0 and result != 0:
             print("You bet on Even and won!")
             gewinn += 5 * 2
         elif odd == 1 and result % 2 != 0:
@@ -565,16 +509,25 @@ def random_number():
     calculator()
 
 
-
-
-from Casino.Bank.Scripts.chip import Chip5
+from Casino.Bank.Scripts.chip import Chips
 screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)  # oder feste Größe
 screen_size = screen.get_size()
-chip = Chip5("../../Bank/Data/Chip5.png", (300, 300), screen_size)
+chip5_chips = []
+xpos = 30
+ypos = 300
+namenumber = 1
+for i in range(20):
+    chip = Chips("../../Bank/Data/Chip5.png", (xpos,ypos) , screen_size)
+    chip.name = f"chip5_{namenumber}"
+    chip5_chips.append(chip)
+    xpos = (xpos + 100)
+    namenumber = (namenumber + 1)
+    print(chip.name)
+
+
 
 # Wenn du die Fenstergröße änderst:
 new_size = screen.get_size()
-chip.update_radius(new_size)
 
 import asyncio
 
@@ -615,15 +568,16 @@ while running and coins > 0:
 
 
         # Chip-Drag & Drop (immer behandeln)
-        chip.handle_event(event)
-
-
+        for chip in chip5_chips:
+            chip.handle_event(event)
 
     # Frame zeichnen
     screen.fill((50, 50, 50))
     draw_wheel()
     draw_field()
-    chip.draw(screen)
+    for chip in chip5_chips:
+        chip.draw(screen)
+
     if ball_visible and ball_position:
         pygame.draw.circle(screen, WHITE, ball_position, 12)
 
@@ -634,5 +588,7 @@ while running and coins > 0:
 print("Thanks for playing!")
 pygame.quit()
 sys.exit()
+
+# für mehr chips: all_chips = chip5_chips + chip25_chips + chip100_chips.
 
 

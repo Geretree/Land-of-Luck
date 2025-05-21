@@ -1,6 +1,6 @@
 import pygame
 
-class Chip5:
+class Chips:
     def __init__(self, image_path, pos, screen_size, radius_factor=0.035):
 
         self.image_path = image_path
