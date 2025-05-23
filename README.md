@@ -41,6 +41,7 @@ python Lobby.py
 1. To move the coin drag and drop it with the mouse.
 2. To start the game press [SPACE]
 3. To exit press [ESC]
+4. To reset Chips position press [G]
 
 ### Slot Machine
 1. To start the game press [SPACE]
