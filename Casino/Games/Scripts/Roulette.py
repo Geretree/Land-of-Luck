@@ -1,3 +1,4 @@
+from itertools import count
 import pygame
 import random
 import json
@@ -255,19 +256,21 @@ ball_visible = False
 ball_position = None
 last_result = None
 
-
-
-
 def random_number():
-
-    # Dynamischer Radius auf Basis der Bildschirmhöhe
-    base_ball_radius = 187  # Ursprünglich bei Höhe 900
+    base_ball_radius = 187
     scaled_ball_radius = int((HEIGHT / 900) * base_ball_radius)
-
     start_angle = -90
-    angle = start_angle
     SLICE_ANGLE = 360 / 37
-    total_spin_degrees = random.randint(1800, 2160)
+    SLICE_ANGLE_HALF = (360 / 37)/2
+
+    # Ziel-Sektor bestimmen
+    target_index = random.randint(0, 36)
+    target_angle = ((target_index * SLICE_ANGLE)-SLICE_ANGLE_HALF)
+    target_angle = (target_angle - 90 + 95) % 360
+
+    num_full_spins = random.randint(4, 5)
+    total_spin_degrees = num_full_spins * 360 + target_angle
+    angle = start_angle
     current_step = 20
     min_step = 1
     slowdown_factor = 0.99
@@ -278,12 +281,10 @@ def random_number():
         draw_wheel()
         draw_field()
 
-        # Position berechnen
         rad = math.radians(angle % 360)
         ball_x = CENTER[0] + scaled_ball_radius * math.cos(rad)
         ball_y = CENTER[1] + scaled_ball_radius * math.sin(rad)
 
-        # Ballgröße anpassen (z. B. 12 px bei Höhe 900)
         ball_radius = int((HEIGHT / 900) * 12)
         pygame.draw.circle(screen, WHITE, (int(ball_x), int(ball_y)), ball_radius)
 
@@ -297,17 +298,11 @@ def random_number():
         if angle - start_angle >= total_spin_degrees:
             spinning = False
 
-    # Ergebnis berechnen
     global ball_position, ball_visible, last_result
-
-    final_angle = angle % 360
-    adjusted_angle = (final_angle + 95) % 360  # Korrektur je nach Startwinkel / Ausrichtung
-    index = int(adjusted_angle // SLICE_ANGLE)
-    result = numbers[index]
-
-    ball_position = (int(ball_x), int(ball_y))  # speichere Ballposition
-    last_result = result
-    ball_visible = True  # Ball soll nun angezeigt bleiben
+    ball_position = (int(ball_x), int(ball_y))
+    last_result = numbers[target_index]
+    result = last_result
+    ball_visible = True
 
 
     def calculator():
@@ -319,6 +314,10 @@ def random_number():
         def is_2(n): return n in {
             2, 5, 8, 11, 14, 17, 20, 23,
             26, 29, 32, 35
+        }
+        def is_1(n): return n in {
+            1, 4, 7, 10, 13, 16, 19, 22,
+            25, 28, 31, 34
         }
 
         posx_start = 935 + 30
@@ -381,22 +380,6 @@ def random_number():
         hitbox2to1_2 = pygame.Rect(1845, 220, int(35 * X_SCALE), int(60 * Y_SCALE))
         hitbox2to1_3 = pygame.Rect(1845, 120, int(35 * X_SCALE), int(60 * Y_SCALE))
 
-
-        num0 = 100
-        numbers = 0
-        red = 0
-        black = 0
-        even = 0
-        odd = 0
-        one_to_eighteen = 0
-        nineteen_to_thirtysix = 0
-        one_to_twelve = 0
-        thirteen_to_twentyfour = 0
-        twentyfive_to_thirtysix = 0
-        st_row = 0
-        nd_row = 0
-        rd_row = 0
-
         number_hitboxes = [
             hitbox0, hitbox1, hitbox2, hitbox3, hitbox4, hitbox5,
             hitbox6, hitbox7, hitbox8, hitbox9, hitbox10, hitbox11,
@@ -406,101 +389,127 @@ def random_number():
             hitbox30, hitbox31, hitbox32, hitbox33, hitbox34, hitbox35, hitbox36
         ]
 
-        for chip in chip5_chips:
+        config = [
+            {"value": 5, "list": chip5_chips},
+            {"value": 10, "list": chip10_chips},
+            {"value": 50, "list": chip50_chips},
+            {"value": 100, "list": chip100_chips},
+            {"value": 500, "list": chip500_chips},
+            {"value": 1000, "list": chip1000_chips},
+            {"value": 5000, "list": chip5000_chips}
+        ]
+
+        gewinn = 0
+        verlust = 0
+
+        for chip in get_all_chips():
             # Zahlenfelder
             for i, hitbox in enumerate(number_hitboxes):
                 if chip.collides_with_rect(hitbox):
-                    print(f"{chip.name} liegt auf Zahl {i}")
                     numbers = i
+                    for conf in config:
+                        if f"chip{conf['value']}_" in chip.name.lower():
+                            if numbers == result and 0 <= result <= 36:
+                                gewinn += conf["value"] * 35
+                            else:
+                                verlust += conf["value"]
                     break  # Kein weiteres Feld prüfen
 
             # Farben
             if chip.collides_with_rect(hitboxred):
-                red = 1
+                for conf in config:
+                    if f"chip{conf['value']}_" in chip.name.lower():
+                        if is_red(result):
+                            gewinn += conf["value"]
+                        else:
+                            verlust += conf["value"]
             elif chip.collides_with_rect(hitboxblack):
-                black = 1
+                for conf in config:
+                    if f"chip{conf['value']}_" in chip.name.lower():
+                        if is_red != result and result != 0:
+                            gewinn += conf["value"]
+                        else:
+                            verlust += conf["value"]
 
             # Gerade/Ungerade
             if chip.collides_with_rect(hitboxeven):
-                even = 1
+                for conf in config:
+                    if f"chip{conf['value']}_" in chip.name.lower():
+                        if result % 2 == 0 and result != 0:
+                            gewinn += conf["value"]
+                        else:
+                            verlust += conf["value"]
             elif chip.collides_with_rect(hitboxodd):
-                odd = 1
+                for conf in config:
+                    if f"chip{conf['value']}_" in chip.name.lower():
+                        if result != 0 and result % 2 != 0:
+                            gewinn += conf["value"]
+                        else:
+                            verlust += conf["value"]
 
             # 1–18 vs 19–36
             if chip.collides_with_rect(hitbox1to18):
-                one_to_eighteen = 1
+                for conf in config:
+                    if f"chip{conf['value']}_" in chip.name.lower():
+                        if 1 <= result <= 18:
+                            gewinn += conf["value"]
+                        else:
+                            verlust += conf["value"]
             elif chip.collides_with_rect(hitbox19to36):
-                nineteen_to_thirtysix = 1
+                for conf in config:
+                    if f"chip{conf['value']}_" in chip.name.lower():
+                        if 19 <= result <= 36:
+                            gewinn += conf["value"]
+                        else:
+                            verlust += conf["value"]
 
             # Dutzende
             if chip.collides_with_rect(hitbox1st12):
-                one_to_twelve = 1
+                for conf in config:
+                    if f"chip{conf['value']}_" in chip.name.lower():
+                        if 1 <= result <= 12:
+                            gewinn += conf["value"] * 2
+                        else:
+                            verlust += conf["value"]
             elif chip.collides_with_rect(hitbox2nd12):
-                thirteen_to_twentyfour = 1
+                for conf in config:
+                    if f"chip{conf['value']}_" in chip.name.lower():
+                        if 13 <= result <= 24:
+                            gewinn += conf["value"] * 2
+                        else:
+                            verlust += conf["value"]
             elif chip.collides_with_rect(hitbox3rd12):
-                twentyfive_to_thirtysix = 1
+                for conf in config:
+                    if f"chip{conf['value']}_" in chip.name.lower():
+                        if 25 <= result <= 36:
+                            gewinn += conf["value"] * 2
+                        else:
+                            verlust += conf["value"]
 
             # Reihen
             if chip.collides_with_rect(hitbox2to1_1):
-                st_row = 1
+                for conf in config:
+                    if f"chip{conf['value']}_" in chip.name.lower():
+                        if result % 3 == 0:
+                            gewinn += conf["value"] * 2
+                        else:
+                            verlust += conf["value"]
             elif chip.collides_with_rect(hitbox2to1_2):
-                nd_row = 1
+                for conf in config:
+                    if f"chip{conf['value']}_" in chip.name.lower():
+                        if is_2(result):
+                            gewinn += conf["value"] * 2
+                        else:
+                            verlust += conf["value"]
             elif chip.collides_with_rect(hitbox2to1_3):
-                rd_row = 1
+                for conf in config:
+                    if f"chip{conf['value']}_" in chip.name.lower():
+                        if is_1(result):
+                            gewinn += conf["value"] * 2
+                        else:
+                            verlust += conf["value"]
 
-        gewinn = 0
-        verlusst = 0
-
-        if num0 == 0 and result == 0:
-            print("You bet on 0 and won!")
-            gewinn += 5 * 36
-
-        if numbers == result and 1 <= result <= 36:
-            print(f"You bet on {result} and won!")
-            gewinn += 5 * 36
-
-        if red == 1 and is_red(result):
-            print("You bet on Red and won!")
-            gewinn += 5 * 2
-        elif black == 1 and result != 0:
-            print("You bet on Black and won!")
-            gewinn += 5 * 2
-
-        if even == 1 and result % 2 == 0 and result != 0:
-            print("You bet on Even and won!")
-            gewinn += 5 * 2
-        elif odd == 1 and result % 2 != 0:
-            print("You bet on Odd and won!")
-            gewinn += 5 * 2
-
-        if one_to_eighteen == 1 and 1 <= result <= 18:
-            print("You bet on 1 to 18 and won!")
-            gewinn += 5 * 2
-        elif nineteen_to_thirtysix == 1 and 19 <= result <= 36:
-            print("You bet on 19 to 36 and won!")
-            gewinn += 5 * 2
-
-        if one_to_twelve == 1 and 1 <= result <= 12:
-            print("You bet on 1 to 12 and won!")
-            gewinn += 5 * 3
-        elif thirteen_to_twentyfour == 1 and 13 <= result <= 24:
-            print("You bet on 13 to 24 and won!")
-            gewinn += 5 * 3
-        elif twentyfive_to_thirtysix == 1 and 25 <= result <= 36:
-            print("You bet on 25 to 36 and won!")
-            gewinn += 5 * 3
-
-        if rd_row == 1 and result % 3 == 0:
-            print("You bet on the third row and won!")
-            gewinn += 5 * 3
-        elif nd_row == 1 and is_2(result):
-            print("You bet on the second row and won!")
-            gewinn += 5 * 3
-        elif st_row == 1 and result != 0:
-            print("You bet on the first row and won!")
-            gewinn += 5 * 3
-
-        gewinn -= 5
+        gewinn -= verlust
 
         daten["coin"] += gewinn
         with open("../../Bank/Data/coin.json", "w") as f:
@@ -513,17 +522,44 @@ from Casino.Bank.Scripts.chip import Chips
 screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)  # oder feste Größe
 screen_size = screen.get_size()
 chip5_chips = []
-xpos = 30
-ypos = 300
-namenumber = 1
-for i in range(20):
-    chip = Chips("../../Bank/Data/Chip5.png", (xpos,ypos) , screen_size)
-    chip.name = f"chip5_{namenumber}"
-    chip5_chips.append(chip)
-    xpos = (xpos + 100)
-    namenumber = (namenumber + 1)
-    print(chip.name)
+chip10_chips = []
+chip50_chips = []
+chip100_chips = []
+chip500_chips = []
+chip1000_chips = []
+chip5000_chips = []
 
+def get_all_chips():
+    return chip5_chips + chip10_chips + chip50_chips + chip100_chips + chip500_chips + chip1000_chips + chip5000_chips
+
+def spawn_all_chips():
+    xpos = 1000
+    ypos = 900
+
+    chip_configs = [
+        {"value": 5, "count": 80, "list": chip5_chips},
+        {"value": 10, "count": 50, "list": chip10_chips},
+        {"value": 50, "count": 25, "list": chip50_chips},
+        {"value": 100, "count": 25, "list": chip100_chips},
+        {"value": 500, "count": 20, "list": chip500_chips},
+        {"value": 1000, "count": 10, "list": chip1000_chips},
+        {"value": 5000, "count": 5, "list": chip5000_chips}
+    ]
+
+    for config in chip_configs:
+        value = config["value"]
+        count = config["count"]
+        chip_list = config["list"]
+        namenumber = 1
+        for i in range(count):
+            chip = Chips(f"../../Bank/Data/Chip{value}.png", (xpos, ypos), screen_size)
+            chip.name = f"chip{value}_{namenumber}"
+            chip_list.append(chip)
+            namenumber = (namenumber + 1)
+            print(chip.name)
+            ypos -= 1
+        ypos = 900
+        xpos += 100
 
 
 # Wenn du die Fenstergröße änderst:
@@ -532,7 +568,12 @@ new_size = screen.get_size()
 import asyncio
 
 # === Spielschleife ===
+spawn_all_chips()
 running = True
+active_chip = None
+dragged_chips = []
+
+
 while running and coins > 0:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -546,14 +587,11 @@ while running and coins > 0:
                 # Wechsle ins Lobby-Modul (async-Funktion korrekt starten)
                 from Casino.Lobby.Scripts.Lobby import game
 
-                # Versuche, den gerade laufenden Loop zu holen...
                 try:
                     loop = asyncio.get_running_loop()
                 except RuntimeError:
-                    # ...klappt nicht, also starte game() ganz normal als neuen Loop
                     asyncio.run(game())
                 else:
-                    # ...klappt, also plane game() im bestehenden Loop
                     loop.create_task(game())
 
                 break  # verlasse die for-Schleife; while endet durch running=False
@@ -565,17 +603,40 @@ while running and coins > 0:
                 last_result = None
                 random_number()
 
+        # === Chip Drag & Drop ===
+        elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            for chip in reversed(get_all_chips()):  # nur obersten Chip aktivieren
+                if chip.collides_with_point(event.pos):
+                    active_chip = chip
+                    chip.dragging = True
+                    mouse_x, mouse_y = event.pos
+                    chip.drag_offset = (
+                        mouse_x - chip.pos[0],
+                        mouse_y - chip.pos[1]
+                    )
+                    # Chip nach oben bringen
+                    get_all_chips().remove(chip)
+                    get_all_chips().append(chip)
+                    break
 
+        elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+            if active_chip:
+                active_chip.dragging = False
+                active_chip = None
 
-        # Chip-Drag & Drop (immer behandeln)
-        for chip in chip5_chips:
-            chip.handle_event(event)
+        elif event.type == pygame.MOUSEMOTION:
+            if active_chip and active_chip.dragging:
+                mouse_x, mouse_y = event.pos
+                active_chip.pos = (
+                    mouse_x - active_chip.drag_offset[0],
+                    mouse_y - active_chip.drag_offset[1]
+                )
 
     # Frame zeichnen
     screen.fill((50, 50, 50))
     draw_wheel()
     draw_field()
-    for chip in chip5_chips:
+    for chip in get_all_chips():
         chip.draw(screen)
 
     if ball_visible and ball_position:
@@ -588,7 +649,3 @@ while running and coins > 0:
 print("Thanks for playing!")
 pygame.quit()
 sys.exit()
-
-# für mehr chips: all_chips = chip5_chips + chip25_chips + chip100_chips.
-
-
