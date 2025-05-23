@@ -1,5 +1,4 @@
 from itertools import count
-
 import pygame
 import random
 import json
@@ -316,6 +315,10 @@ def random_number():
             2, 5, 8, 11, 14, 17, 20, 23,
             26, 29, 32, 35
         }
+        def is_1(n): return n in {
+            1, 4, 7, 10, 13, 16, 19, 22,
+            25, 28, 31, 34
+        }
 
         posx_start = 935 + 30
         posy_start = 310 - 160
@@ -377,35 +380,6 @@ def random_number():
         hitbox2to1_2 = pygame.Rect(1845, 220, int(35 * X_SCALE), int(60 * Y_SCALE))
         hitbox2to1_3 = pygame.Rect(1845, 120, int(35 * X_SCALE), int(60 * Y_SCALE))
 
-        x1 = 850
-        y1 = 100
-        x2 = 1900
-        y2 = 600
-
-        # Calculate top-left and size
-        left = min(x1, x2)
-        top = min(y1, y2)
-        width = abs(x2 - x1)
-        height = abs(y2 - y1)
-
-        hitbox_for_field = pygame.Rect(left, top, width, height)
-
-
-        num0 = 100
-        numbers = 0
-        red = 0
-        black = 0
-        even = 0
-        odd = 0
-        one_to_eighteen = 0
-        nineteen_to_thirtysix = 0
-        one_to_twelve = 0
-        thirteen_to_twentyfour = 0
-        twentyfive_to_thirtysix = 0
-        st_row = 0
-        nd_row = 0
-        rd_row = 0
-
         number_hitboxes = [
             hitbox0, hitbox1, hitbox2, hitbox3, hitbox4, hitbox5,
             hitbox6, hitbox7, hitbox8, hitbox9, hitbox10, hitbox11,
@@ -414,109 +388,128 @@ def random_number():
             hitbox24, hitbox25, hitbox26, hitbox27, hitbox28, hitbox29,
             hitbox30, hitbox31, hitbox32, hitbox33, hitbox34, hitbox35, hitbox36
         ]
-        count = 0
+
+        config = [
+            {"value": 5, "list": chip5_chips},
+            {"value": 10, "list": chip10_chips},
+            {"value": 50, "list": chip50_chips},
+            {"value": 100, "list": chip100_chips},
+            {"value": 500, "list": chip500_chips},
+            {"value": 1000, "list": chip1000_chips},
+            {"value": 5000, "list": chip5000_chips}
+        ]
+
+        gewinn = 0
+        verlust = 0
 
         for chip in get_all_chips():
             # Zahlenfelder
             for i, hitbox in enumerate(number_hitboxes):
                 if chip.collides_with_rect(hitbox):
-                    print(f"{chip.name} liegt auf Zahl {i}")
                     numbers = i
+                    for conf in config:
+                        if f"chip{conf['value']}_" in chip.name.lower():
+                            if numbers == result and 0 <= result <= 36:
+                                gewinn += conf["value"] * 35
+                            else:
+                                verlust += conf["value"]
                     break  # Kein weiteres Feld prüfen
 
             # Farben
             if chip.collides_with_rect(hitboxred):
-                red = 1
+                for conf in config:
+                    if f"chip{conf['value']}_" in chip.name.lower():
+                        if is_red(result):
+                            gewinn += conf["value"]
+                        else:
+                            verlust += conf["value"]
             elif chip.collides_with_rect(hitboxblack):
-                black = 1
+                for conf in config:
+                    if f"chip{conf['value']}_" in chip.name.lower():
+                        if is_red != result and result != 0:
+                            gewinn += conf["value"]
+                        else:
+                            verlust += conf["value"]
 
             # Gerade/Ungerade
             if chip.collides_with_rect(hitboxeven):
-                even = 1
+                for conf in config:
+                    if f"chip{conf['value']}_" in chip.name.lower():
+                        if result % 2 == 0 and result != 0:
+                            gewinn += conf["value"]
+                        else:
+                            verlust += conf["value"]
             elif chip.collides_with_rect(hitboxodd):
-                odd = 1
+                for conf in config:
+                    if f"chip{conf['value']}_" in chip.name.lower():
+                        if result != 0 and result % 2 != 0:
+                            gewinn += conf["value"]
+                        else:
+                            verlust += conf["value"]
 
             # 1–18 vs 19–36
             if chip.collides_with_rect(hitbox1to18):
-                one_to_eighteen = 1
+                for conf in config:
+                    if f"chip{conf['value']}_" in chip.name.lower():
+                        if 1 <= result <= 18:
+                            gewinn += conf["value"]
+                        else:
+                            verlust += conf["value"]
             elif chip.collides_with_rect(hitbox19to36):
-                nineteen_to_thirtysix = 1
+                for conf in config:
+                    if f"chip{conf['value']}_" in chip.name.lower():
+                        if 19 <= result <= 36:
+                            gewinn += conf["value"]
+                        else:
+                            verlust += conf["value"]
 
             # Dutzende
             if chip.collides_with_rect(hitbox1st12):
-                one_to_twelve = 1
+                for conf in config:
+                    if f"chip{conf['value']}_" in chip.name.lower():
+                        if 1 <= result <= 12:
+                            gewinn += conf["value"] * 2
+                        else:
+                            verlust += conf["value"]
             elif chip.collides_with_rect(hitbox2nd12):
-                thirteen_to_twentyfour = 1
+                for conf in config:
+                    if f"chip{conf['value']}_" in chip.name.lower():
+                        if 13 <= result <= 24:
+                            gewinn += conf["value"] * 2
+                        else:
+                            verlust += conf["value"]
             elif chip.collides_with_rect(hitbox3rd12):
-                twentyfive_to_thirtysix = 1
+                for conf in config:
+                    if f"chip{conf['value']}_" in chip.name.lower():
+                        if 25 <= result <= 36:
+                            gewinn += conf["value"] * 2
+                        else:
+                            verlust += conf["value"]
 
             # Reihen
             if chip.collides_with_rect(hitbox2to1_1):
-                st_row = 1
+                for conf in config:
+                    if f"chip{conf['value']}_" in chip.name.lower():
+                        if result % 3 == 0:
+                            gewinn += conf["value"] * 2
+                        else:
+                            verlust += conf["value"]
             elif chip.collides_with_rect(hitbox2to1_2):
-                nd_row = 1
+                for conf in config:
+                    if f"chip{conf['value']}_" in chip.name.lower():
+                        if is_2(result):
+                            gewinn += conf["value"] * 2
+                        else:
+                            verlust += conf["value"]
             elif chip.collides_with_rect(hitbox2to1_3):
-                rd_row = 1
+                for conf in config:
+                    if f"chip{conf['value']}_" in chip.name.lower():
+                        if is_1(result):
+                            gewinn += conf["value"] * 2
+                        else:
+                            verlust += conf["value"]
 
-
-            if chip.collides_with_rect(hitbox_for_field):
-                count += 1
-                print("hello")
-                print(count)
-
-        gewinn = 0
-        verlusst = 0
-
-        if num0 == 0 and result == 0:
-            print("You bet on 0 and won!")
-            gewinn += 5 * 36
-
-        if numbers == result and 1 <= result <= 36:
-            print(f"You bet on {result} and won!")
-            gewinn += 5 * 36
-
-        if red == 1 and is_red(result):
-            print("You bet on Red and won!")
-            gewinn += 5 * 2
-        elif black == 1 and result != 0:
-            print("You bet on Black and won!")
-            gewinn += 5 * 2
-
-        if even == 1 and result % 2 == 0 and result != 0:
-            print("You bet on Even and won!")
-            gewinn += 5 * 2
-        elif odd == 1 and result % 2 != 0:
-            print("You bet on Odd and won!")
-            gewinn += 5 * 2
-
-        if one_to_eighteen == 1 and 1 <= result <= 18:
-            print("You bet on 1 to 18 and won!")
-            gewinn += 5 * 2
-        elif nineteen_to_thirtysix == 1 and 19 <= result <= 36:
-            print("You bet on 19 to 36 and won!")
-            gewinn += 5 * 2
-
-        if one_to_twelve == 1 and 1 <= result <= 12:
-            print("You bet on 1 to 12 and won!")
-            gewinn += 5 * 3
-        elif thirteen_to_twentyfour == 1 and 13 <= result <= 24:
-            print("You bet on 13 to 24 and won!")
-            gewinn += 5 * 3
-        elif twentyfive_to_thirtysix == 1 and 25 <= result <= 36:
-            print("You bet on 25 to 36 and won!")
-            gewinn += 5 * 3
-
-        if rd_row == 1 and result % 3 == 0:
-            print("You bet on the third row and won!")
-            gewinn += 5 * 3
-        elif nd_row == 1 and is_2(result):
-            print("You bet on the second row and won!")
-            gewinn += 5 * 3
-        elif st_row == 1 and result != 0:
-            print("You bet on the first row and won!")
-            gewinn += 5 * 3
-
-        gewinn -= 5
+        gewinn -= verlust
 
         daten["coin"] += gewinn
         with open("../../Bank/Data/coin.json", "w") as f:
@@ -536,7 +529,6 @@ chip500_chips = []
 chip1000_chips = []
 chip5000_chips = []
 
-
 def get_all_chips():
     return chip5_chips + chip10_chips + chip50_chips + chip100_chips + chip500_chips + chip1000_chips + chip5000_chips
 
@@ -545,15 +537,14 @@ def spawn_all_chips():
     ypos = 900
 
     chip_configs = [
-        {"value": 5, "count": 30, "list": chip5_chips},
-        {"value": 10, "count": 70, "list": chip10_chips},
-        {"value": 50, "count": 10, "list": chip50_chips},
-        {"value": 100, "count": 40, "list": chip100_chips},
-        {"value": 500, "count": 200, "list": chip500_chips},
-        {"value": 1000, "count": 5, "list": chip1000_chips},
-        {"value": 5000, "count": 2, "list": chip5000_chips}
+        {"value": 5, "count": 80, "list": chip5_chips},
+        {"value": 10, "count": 50, "list": chip10_chips},
+        {"value": 50, "count": 25, "list": chip50_chips},
+        {"value": 100, "count": 25, "list": chip100_chips},
+        {"value": 500, "count": 20, "list": chip500_chips},
+        {"value": 1000, "count": 10, "list": chip1000_chips},
+        {"value": 5000, "count": 5, "list": chip5000_chips}
     ]
-
 
     for config in chip_configs:
         value = config["value"]
