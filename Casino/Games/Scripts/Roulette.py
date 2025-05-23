@@ -4,6 +4,7 @@ import random
 import json
 import math
 import sys
+from Casino.Bank.Scripts.Bank import ChipData
 
 
 # === Farben ===
@@ -389,20 +390,15 @@ def random_number():
             hitbox30, hitbox31, hitbox32, hitbox33, hitbox34, hitbox35, hitbox36
         ]
 
-        config = [
-            {"value": 5, "list": chip5_chips},
-            {"value": 10, "list": chip10_chips},
-            {"value": 50, "list": chip50_chips},
-            {"value": 100, "list": chip100_chips},
-            {"value": 500, "list": chip500_chips},
-            {"value": 1000, "list": chip1000_chips},
-            {"value": 5000, "list": chip5000_chips}
-        ]
+        all_chips = ChipData.get_all_chips()
+        config = ChipData.chip_configs()
+
+
 
         gewinn = 0
         verlust = 0
 
-        for chip in get_all_chips():
+        for chip in all_chips:
             # Zahlenfelder
             for i, hitbox in enumerate(number_hitboxes):
                 if chip.collides_with_rect(hitbox):
@@ -521,32 +517,34 @@ def random_number():
 from Casino.Bank.Scripts.chip import Chips
 screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)  # oder feste Größe
 screen_size = screen.get_size()
-chip5_chips = []
-chip10_chips = []
-chip50_chips = []
-chip100_chips = []
-chip500_chips = []
-chip1000_chips = []
-chip5000_chips = []
 
-def get_all_chips():
-    return chip5_chips + chip10_chips + chip50_chips + chip100_chips + chip500_chips + chip1000_chips + chip5000_chips
+def chips_back_to_spawn():
+
+    configs = ChipData.chip_configs()
+
+
+
+    ypos_start = HEIGHT * 0.85
+    xpos = WIDTH * 0.55
+
+    for config in configs:
+        chip_list = config["list"]
+        for index, chip in enumerate(chip_list):
+            ypos = ypos_start - index   # stapeln nach oben
+            chip.pos = (xpos, ypos)        # neue Position setzen
+        xpos += 100  # nächster Stapel nach rechts
+
+
 
 def spawn_all_chips():
-    xpos = 1000
-    ypos = 900
+    ypos = HEIGHT * 0.85
+    xpos = WIDTH * 0.55
 
-    chip_configs = [
-        {"value": 5, "count": 80, "list": chip5_chips},
-        {"value": 10, "count": 50, "list": chip10_chips},
-        {"value": 50, "count": 25, "list": chip50_chips},
-        {"value": 100, "count": 25, "list": chip100_chips},
-        {"value": 500, "count": 20, "list": chip500_chips},
-        {"value": 1000, "count": 10, "list": chip1000_chips},
-        {"value": 5000, "count": 5, "list": chip5000_chips}
-    ]
+    configs = ChipData.chip_configs()
+    for config in configs:
+        print(config["value"], len(config["list"]))
 
-    for config in chip_configs:
+    for config in configs:
         value = config["value"]
         count = config["count"]
         chip_list = config["list"]
@@ -558,7 +556,7 @@ def spawn_all_chips():
             namenumber = (namenumber + 1)
             print(chip.name)
             ypos -= 1
-        ypos = 900
+        ypos = HEIGHT * 0.85
         xpos += 100
 
 
@@ -572,6 +570,8 @@ spawn_all_chips()
 running = True
 active_chip = None
 dragged_chips = []
+
+all_chips = ChipData.get_all_chips()
 
 
 while running and coins > 0:
@@ -603,9 +603,12 @@ while running and coins > 0:
                 last_result = None
                 random_number()
 
+            elif event.key == pygame.K_g:
+                chips_back_to_spawn()
+
         # === Chip Drag & Drop ===
         elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-            for chip in reversed(get_all_chips()):  # nur obersten Chip aktivieren
+            for chip in reversed(all_chips):  # nur obersten Chip aktivieren
                 if chip.collides_with_point(event.pos):
                     active_chip = chip
                     chip.dragging = True
@@ -615,8 +618,8 @@ while running and coins > 0:
                         mouse_y - chip.pos[1]
                     )
                     # Chip nach oben bringen
-                    get_all_chips().remove(chip)
-                    get_all_chips().append(chip)
+                    all_chips.remove(chip)
+                    all_chips.append(chip)
                     break
 
         elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
@@ -636,7 +639,7 @@ while running and coins > 0:
     screen.fill((50, 50, 50))
     draw_wheel()
     draw_field()
-    for chip in get_all_chips():
+    for chip in all_chips:
         chip.draw(screen)
 
     if ball_visible and ball_position:
