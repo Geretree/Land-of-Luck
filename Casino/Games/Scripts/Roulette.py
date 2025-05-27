@@ -258,8 +258,7 @@ ball_position = None
 last_result = None
 
 def random_number():
-    base_ball_radius = 187
-    scaled_ball_radius = int((HEIGHT / 900) * base_ball_radius)
+    base_ball_radius = 225 * X_SCALE
     start_angle = -90
     SLICE_ANGLE = 360 / 37
     SLICE_ANGLE_HALF = (360 / 37)/2
@@ -283,8 +282,8 @@ def random_number():
         draw_field()
 
         rad = math.radians(angle % 360)
-        ball_x = CENTER[0] + scaled_ball_radius * math.cos(rad)
-        ball_y = CENTER[1] + scaled_ball_radius * math.sin(rad)
+        ball_x = CENTER[0] + base_ball_radius * math.cos(rad)
+        ball_y = CENTER[1] + base_ball_radius * math.sin(rad)
 
         ball_radius = int((HEIGHT / 900) * 12)
         pygame.draw.circle(screen, WHITE, (int(ball_x), int(ball_y)), ball_radius)
@@ -532,7 +531,7 @@ def chips_back_to_spawn():
         for index, chip in enumerate(chip_list):
             ypos = ypos_start - index   # stapeln nach oben
             chip.pos = (xpos, ypos)        # neue Position setzen
-        xpos += 100  # nächster Stapel nach rechts
+        xpos += WIDTH * 0.06  # nächster Stapel nach rechts
 
 
 
@@ -541,23 +540,29 @@ def spawn_all_chips():
     xpos = WIDTH * 0.55
 
     configs = ChipData.chip_configs()
-    for config in configs:
-        print(config["value"], len(config["list"]))
+    chip_images = {}  # {value: loaded_surface}
 
     for config in configs:
         value = config["value"]
         count = config["count"]
         chip_list = config["list"]
+
+        if value not in chip_images:
+            chip_images[value] = pygame.image.load(f"../../Bank/Data/Chip{value}.png").convert_alpha()
+
+        image = chip_images[value]
         namenumber = 1
+
         for i in range(count):
-            chip = Chips(f"../../Bank/Data/Chip{value}.png", (xpos, ypos), screen_size)
+            chip = Chips(image, (xpos, ypos), screen_size)
             chip.name = f"chip{value}_{namenumber}"
             chip_list.append(chip)
-            namenumber = (namenumber + 1)
-            print(chip.name)
+            namenumber += 1
             ypos -= 1
+
         ypos = HEIGHT * 0.85
-        xpos += 100
+        xpos += WIDTH * 0.06
+
 
 
 # Wenn du die Fenstergröße änderst:
