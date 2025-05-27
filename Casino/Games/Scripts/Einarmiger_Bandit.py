@@ -47,6 +47,12 @@ spin_locked = False
 spin_lock_time = 0
 SPIN_LOCK_DURATION = 5000  # 5 Sekunden
 
+#
+spinning = False
+spin_display_start = 0
+spin_display_duration = 1000  # 1 Sekunden
+
+
 def draw_housing():
     pygame.draw.rect(screen, GOLD, (*HOUSING_POS, HOUSING_WIDTH, HOUSING_HEIGHT), border_radius=30)
     inner = pygame.Rect(HOUSING_POS[0] + 10, HOUSING_POS[1] + 10,
@@ -113,18 +119,29 @@ running = True
 while running:
     now = pygame.time.get_ticks()
 
+    # Zeige 3 Sekunden lang zufällige Zahlen
+    if spinning:
+        if now - spin_display_start < spin_display_duration:
+            reels = [random.randint(1, 7) for _ in range(REEL_COUNT)]
+            colors = [WHITE] * 3
+        else:
+            reels = play_spin()
+            colors = detect_patterns(reels)
+            spinning = False
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                  running = False
-            elif event.key == pygame.K_SPACE and not lever_pulled and not spin_locked:
-                lever_pulled = True
-                spin_start_time = now
-                lever_angle = -45  # Hebel nach unten
-                reels = play_spin()
-                colors = detect_patterns(reels)
+                 # Im Event-Handler:
+            elif event.key == pygame.K_SPACE and not lever_pulled and not spin_locked and not spinning:
+                 lever_pulled = True
+                 spin_start_time = now
+                 spin_display_start = now
+                 lever_angle = -45
+                 spinning = True
 
     # Hebel langsam zurück
     if lever_pulled and now - spin_start_time > SPIN_DURATION:
