@@ -281,6 +281,9 @@ def random_number():
         draw_wheel()
         draw_field()
 
+        for chip in ChipData.get_all_chips():
+            chip.draw(screen)
+
         rad = math.radians(angle % 360)
         ball_x = CENTER[0] + base_ball_radius * math.cos(rad)
         ball_y = CENTER[1] + base_ball_radius * math.sin(rad)
@@ -571,13 +574,12 @@ new_size = screen.get_size()
 import asyncio
 
 # === Spielschleife ===
-spawn_all_chips()
+
 running = True
 active_chip = None
 dragged_chips = []
-
+spawn_all_chips()
 all_chips = ChipData.get_all_chips()
-
 
 while running and coins > 0:
     for event in pygame.event.get():
@@ -609,6 +611,7 @@ while running and coins > 0:
                 random_number()
 
             elif event.key == pygame.K_g:
+                all_chips = ChipData.get_all_chips()
                 chips_back_to_spawn()
 
         # === Chip Drag & Drop ===
