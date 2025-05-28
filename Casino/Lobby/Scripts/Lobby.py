@@ -1,8 +1,9 @@
 # Casino/Lobby/Scripts/Lobby.py
-import asyncio
 import pygame
 import traceback
-import sys
+import json
+import Casino.Games.Scripts.Einarmiger_Bandit as Einarmiger_Bandit
+import Casino.Games.Scripts.Roulette as Roulette
 
 # === Farben ===
 BLACK = (0, 0, 0)
@@ -11,6 +12,14 @@ GREEN = (45, 117, 16)
 WHITE = (255, 255, 255)
 BROWN = (156, 86, 12)
 GOLD = (215, 162, 20)
+
+try:
+    with open("../../Bank/Data/spawnd_chips.json", "r") as f:
+        daten = json.load(f)
+    chips = daten["roulette_chips"]
+except FileNotFoundError:
+    chips = 100
+    daten = {"roulette_chips": chips}
 
 pygame.init()
 screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
@@ -52,21 +61,6 @@ def reset_game():
         win_height/2 - peter_size.y/2
     )
 
-
-def bandit_action():
-    print("Peter hat den Banditen berührt!")
-    from Casino.Games.Scripts import Einarmiger_Bandit
-    Einarmiger_Bandit()
-
-
-
-def roulette_action():
-    print("Peter hat das Roulette berührt!")
-    from Casino.Games.Scripts import Roulette
-    Roulette()
-
-
-
 def peter_player():
     global running, dt
     screen.blit(peter_image, (int(peter_pos.x), int(peter_pos.y)))
@@ -101,20 +95,16 @@ def check_collision():
     keys = pygame.key.get_pressed()
 
     if rect_p.colliderect(rect_b) and keys[pygame.K_SPACE]:
-        bandit_action()
-        pygame.quit()
-        sys.exit()
+        Einarmiger_Bandit.main()
 
     if rect_p.colliderect(rect_r) and keys[pygame.K_SPACE]:
-        roulette_action()
-        pygame.quit()
-        sys.exit()
+        Roulette.main()
 
 
 # —————————————————————————————————————————————————————————————
 # Der asynchrone Game-Loop mit Debugging
 # —————————————————————————————————————————————————————————————
-async def game():
+def game():
     global running, dt
     # Sicherstellen, dass running True ist
     running = True
@@ -136,22 +126,17 @@ async def game():
             pygame.display.flip()
             dt = clock.tick(60) / 1000.0
 
-            await asyncio.sleep(0)
+
     except Exception:
         traceback.print_exc()
     finally:
         # Deaktiviert, damit Browser nicht sofort schließt
         # pygame.quit()
         print("Game exited")
-
-
-# Entry-Point in main.py
-# Casino/Lobby/Scripts/main.py
-import asyncio
-
+        pygame.quit()
 
 def main():
-    asyncio.run(game())
+    game()
 
 if __name__ == "__main__":
     main()
