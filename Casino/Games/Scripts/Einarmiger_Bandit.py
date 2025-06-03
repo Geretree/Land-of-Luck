@@ -1,3 +1,5 @@
+# slot_machine.py
+
 import pygame
 import random
 import sys
@@ -13,67 +15,30 @@ GREEN = (0, 255, 0)
 RED = (255, 0, 0)
 BLUE = (0, 0, 255)
 
-# Pygame Setup
-pygame.init()
-# Fullscreen aktivieren, automatisch auf die native Auflösung:
-screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
-# Falls du die aktuelle Auflösung brauchst:
-SCREEN_WIDTH, SCREEN_HEIGHT = screen.get_size()
-pygame.display.set_caption("Einarmiger Bandit")
-clock = pygame.time.Clock()
-# Center
-CENTER = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
-
-# Slot-Maschine Geometrie
-HOUSING_WIDTH, HOUSING_HEIGHT = 400, 500
-HOUSING_POS = (CENTER[0] - HOUSING_WIDTH // 2, CENTER[1] - HOUSING_HEIGHT // 2)
-
 REEL_COUNT = 3
-REEL_WIDTH, REEL_HEIGHT = 100, 150
-REEL_GAP = 20
-REEL_X_START = CENTER[0] - (REEL_COUNT * REEL_WIDTH + (REEL_COUNT - 1) * REEL_GAP) // 2
-REEL_Y = CENTER[1] - REEL_HEIGHT // 2
 
-font = pygame.font.Font(None, 80)
-
-# Hebelsteuerung
-lever_angle = 45
-lever_pulled = False
-spin_start_time = 0
-SPIN_DURATION = 500  # Hebel bleibt 0.5s unten
-
-# Spin-Sperre
-spin_locked = False
-spin_lock_time = 0
-SPIN_LOCK_DURATION = 5000  # 5 Sekunden
-
-#
-spinning = False
-spin_display_start = 0
-spin_display_duration = 1000  # 1 Sekunden
-
-
-def draw_housing():
-    pygame.draw.rect(screen, GOLD, (*HOUSING_POS, HOUSING_WIDTH, HOUSING_HEIGHT), border_radius=30)
-    inner = pygame.Rect(HOUSING_POS[0] + 10, HOUSING_POS[1] + 10,
-                        HOUSING_WIDTH - 20, HOUSING_HEIGHT - 20)
+def draw_housing(screen, housing_pos, housing_width, housing_height):
+    pygame.draw.rect(screen, GOLD, (*housing_pos, housing_width, housing_height), border_radius=30)
+    inner = pygame.Rect(housing_pos[0] + 10, housing_pos[1] + 10,
+                        housing_width - 20, housing_height - 20)
     pygame.draw.rect(screen, DARK_GRAY, inner, border_radius=20)
 
-def draw_reels(values, colors=None):
+def draw_reels(screen, values, colors, reel_x_start, reel_y, reel_width, reel_height):
     if colors is None:
         colors = [WHITE] * len(values)
     for i, val in enumerate(values):
-        x = REEL_X_START + i * (REEL_WIDTH + REEL_GAP)
-        reel = pygame.Rect(x, REEL_Y, REEL_WIDTH, REEL_HEIGHT)
+        x = reel_x_start + i * (reel_width + 20)
+        reel = pygame.Rect(x, reel_y, reel_width, reel_height)
         pygame.draw.rect(screen, colors[i], reel, border_radius=15)
         pygame.draw.rect(screen, BLACK, reel, 4, border_radius=15)
+        font = pygame.font.Font(None, 80)
         text = font.render(str(val), True, BLACK)
         txt_rect = text.get_rect(center=reel.center)
         screen.blit(text, txt_rect)
 
-def draw_lever():
-    base_x = HOUSING_POS[0] + HOUSING_WIDTH + 30
-    base_y = CENTER[1] + 60
+def draw_lever(screen, housing_pos, housing_width, center, lever_angle):
+    base_x = housing_pos[0] + housing_width + 30
+    base_y = center[1] + 60
     length = 140
     angle = math.radians(lever_angle)
     end = (base_x + math.cos(angle) * length,
@@ -85,8 +50,7 @@ def draw_lever():
 def play_spin():
     return [random.randint(1, 7) for _ in range(REEL_COUNT)]
 
-def detect_patterns(values):
-    global spin_locked, spin_lock_time, now
+def detect_patterns(values, now, spin_locked, spin_lock_time):
     colors = [WHITE] * len(values)
 
     # Drei gleiche
@@ -94,13 +58,13 @@ def detect_patterns(values):
         if values[0] == 7:
             spin_locked = True
             spin_lock_time = now
-            return [RED] * 3
+            return [RED] * 3, spin_locked, spin_lock_time
         else:
-            return [GREEN] * 3
+            return [GREEN] * 3, spin_locked, spin_lock_time
 
     # Reihenfolge
     if sorted(values) == list(range(min(values), max(values) + 1)):
-        return [BLUE] * 3
+        return [BLUE] * 3, spin_locked, spin_lock_time
 
     # Zwei gleiche
     for i in range(len(values)):
@@ -108,65 +72,87 @@ def detect_patterns(values):
             if values[i] == values[j]:
                 colors[i] = colors[j] = GOLD
 
-    return colors
+    return colors, spin_locked, spin_lock_time
 
 
+def main():
+    pygame.init()
+    screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+    SCREEN_WIDTH, SCREEN_HEIGHT = screen.get_size()
+    pygame.display.set_caption("Einarmiger Bandit")
+    clock = pygame.time.Clock()
 
-reels = ["-", "-", "-"]
-colors = [WHITE] * 3
-running = True
+    CENTER = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
 
-while running:
-    now = pygame.time.get_ticks()
+    # Slot-Maschine Geometrie
+    HOUSING_WIDTH, HOUSING_HEIGHT = 400, 500
+    HOUSING_POS = (CENTER[0] - HOUSING_WIDTH // 2, CENTER[1] - HOUSING_HEIGHT // 2)
 
-    # Zeige 3 Sekunden lang zufällige Zahlen
-    if spinning:
-        if now - spin_display_start < spin_display_duration:
-            reels = [random.randint(1, 7) for _ in range(REEL_COUNT)]
-            colors = [WHITE] * 3
-        else:
-            reels = play_spin()
-            colors = detect_patterns(reels)
-            spinning = False
+    REEL_WIDTH, REEL_HEIGHT = 100, 150
+    REEL_GAP = 20
+    REEL_X_START = CENTER[0] - (REEL_COUNT * REEL_WIDTH + (REEL_COUNT - 1) * REEL_GAP) // 2
+    REEL_Y = CENTER[1] - REEL_HEIGHT // 2
 
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-        elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_ESCAPE:
-                 running = False
-                 # Im Event-Handler:
-            elif event.key == pygame.K_SPACE and not lever_pulled and not spin_locked and not spinning:
-                 lever_pulled = True
-                 spin_start_time = now
-                 spin_display_start = now
-                 lever_angle = -45
-                 spinning = True
+    font = pygame.font.Font(None, 80)
 
-    # Hebel langsam zurück
-    if lever_pulled and now - spin_start_time > SPIN_DURATION:
-        lever_angle = 45
-        lever_pulled = False
+    # Hebelsteuerung
+    lever_angle = 45
+    lever_pulled = False
+    spin_start_time = 0
+    SPIN_DURATION = 500  # 0.5 Sekunden
 
-    # Spin-Sperre aufheben nach 5 Sekunden
-    if spin_locked and now - spin_lock_time > SPIN_LOCK_DURATION:
-        spin_locked = False
+    # Spin-Sperre
+    spin_locked = False
+    spin_lock_time = 0
+    SPIN_LOCK_DURATION = 5000  # 5 Sekunden
 
-    screen.fill(DARK_GRAY)
-    draw_housing()
-    draw_reels(reels, colors)
-    draw_lever()
+    reels = ["-", "-", "-"]
+    colors = [WHITE] * 3
 
-    # Hinweis auf Wartezeit
-    if spin_locked:
-        wait_text = font.render("Warte...", True, BLUE)
-        screen.blit(wait_text, (CENTER[0] - wait_text.get_width() // 2, REEL_Y + REEL_HEIGHT + 30))
+    running = True
 
-    pygame.display.flip()
-    clock.tick(60)
+    while running:
+        now = pygame.time.get_ticks()
 
-pygame.quit()
-sys.exit()
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    return
+
+                elif event.key == pygame.K_SPACE and not lever_pulled and not spin_locked:
+                    lever_pulled = True
+                    spin_start_time = now
+                    lever_angle = -45  # Hebel nach unten
+                    reels = play_spin()
+                    colors, spin_locked, spin_lock_time = detect_patterns(reels, now, spin_locked, spin_lock_time)
+
+        # Hebel langsam zurück
+        if lever_pulled and now - spin_start_time > SPIN_DURATION:
+            lever_angle = 45
+            lever_pulled = False
+
+        # Spin-Sperre aufheben nach 5 Sekunden
+        if spin_locked and now - spin_lock_time > SPIN_LOCK_DURATION:
+            spin_locked = False
+
+        screen.fill(DARK_GRAY)
+        draw_housing(screen, HOUSING_POS, HOUSING_WIDTH, HOUSING_HEIGHT)
+        draw_reels(screen, reels, colors, REEL_X_START, REEL_Y, REEL_WIDTH, REEL_HEIGHT)
+        draw_lever(screen, HOUSING_POS, HOUSING_WIDTH, CENTER, lever_angle)
+
+        # Hinweis auf Wartezeit
+        if spin_locked:
+            wait_text = font.render("Warte...", True, BLUE)
+            screen.blit(wait_text, (CENTER[0] - wait_text.get_width() // 2, REEL_Y + REEL_HEIGHT + 30))
+
+        pygame.display.flip()
+        clock.tick(60)
+
+    pygame.quit()
+    sys.exit()
 
 
-
+if __name__ == "__main__":
+    main()

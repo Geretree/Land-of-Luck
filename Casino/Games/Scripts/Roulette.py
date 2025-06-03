@@ -1,11 +1,11 @@
-from itertools import count
 import pygame
 import random
 import json
 import math
-import sys
 from Casino.Bank.Scripts.Bank import ChipData
-
+from Casino.Bank.Scripts.chip import Chips
+screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)  # oder feste Größe
+screen_size = screen.get_size()
 
 # === Farben ===
 BLACK = (0, 0, 0)
@@ -15,9 +15,7 @@ WHITE = (255, 255, 255)
 BROWN = (156, 86, 12)
 GOLD = (215, 162, 20)
 
-# Pygame Setup
-pygame.init()
-screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+
 WIDTH, HEIGHT = screen.get_size()
 CENTER = (WIDTH // 4, HEIGHT // 2)
 X_SCALE = WIDTH / 1920
@@ -28,8 +26,6 @@ clock = pygame.time.Clock()
 circle_pos = [WIDTH // 2, HEIGHT // 2]
 pygame.display.set_caption("Roulette")
 
-
-# Lade Coins
 try:
     with open("../../Bank/Data/coin.json", "r") as f:
         daten = json.load(f)
@@ -37,7 +33,6 @@ try:
 except FileNotFoundError:
     coins = 100
     daten = {"coin": coins}
-
 
 numbers = [
     0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 30,
@@ -91,7 +86,6 @@ def draw_slice(angle, color, index):
     text_rect = text.get_rect(center=(x, y))
     screen.blit(text, text_rect)
 
-
 def draw_Edge(angle):
     # Nutze denselben Mittelwinkel wie in draw_slice
     a = math.radians((angle + 5) + SLICE_ANGLE / 2)
@@ -108,7 +102,6 @@ def draw_Edge(angle):
     # Liniendicke ebenfalls skaliert
     line_width = max(1, int(6 * ((X_SCALE + Y_SCALE) / 2)))
     pygame.draw.line(screen, GOLD, (x1, y1), (x2, y2), line_width)
-
 
 def draw_Middle(angle):
     a = math.radians(angle + SLICE_ANGLE / 2)
@@ -252,11 +245,6 @@ def draw_field():
     font = pygame.font.SysFont(None, int(36 * Y_SCALE))
     screen.blit(font.render(f"Coins: {coins}" , True, WHITE), scale(10, 10))
 
-#---------------------------------SPIELFUNKTION-------------------------------
-ball_visible = False
-ball_position = None
-last_result = None
-
 def random_number():
     base_ball_radius = 225 * X_SCALE
     start_angle = -90
@@ -280,6 +268,9 @@ def random_number():
         screen.fill((50, 50, 50))
         draw_wheel()
         draw_field()
+
+        for chip in ChipData.get_all_chips():
+            chip.draw(screen)
 
         rad = math.radians(angle % 360)
         ball_x = CENTER[0] + base_ball_radius * math.cos(rad)
@@ -512,11 +503,6 @@ def random_number():
     print(result)
     calculator()
 
-
-from Casino.Bank.Scripts.chip import Chips
-screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)  # oder feste Größe
-screen_size = screen.get_size()
-
 def chips_back_to_spawn():
 
     configs = ChipData.chip_configs()
@@ -563,97 +549,90 @@ def spawn_all_chips():
         ypos = HEIGHT * 0.85
         xpos += WIDTH * 0.06
 
+def main():
+    pygame.init()
+    screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+    clock = pygame.time.Clock()
+    pygame.display.set_caption("Roulette")
 
+    # SPIELFUNKTION-Variablen initialisieren
+    ball_visible = False
+    ball_position = None
 
-# Wenn du die Fenstergröße änderst:
-new_size = screen.get_size()
+    active_chip = None
+    spawnd = 0
+    if spawnd == 0:
+        spawn_all_chips()
+        spawnd += 69
+    all_chips = ChipData.get_all_chips()
 
-import asyncio
-
-# === Spielschleife ===
-spawn_all_chips()
-running = True
-active_chip = None
-dragged_chips = []
-
-all_chips = ChipData.get_all_chips()
-
-
-while running and coins > 0:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-
-        # Nur bei Tastendruck hat event.key
-        elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_ESCAPE:
+    # Hier könnte dein Game-Loop starten, z.B.:
+    running = True
+    while running and coins > 0:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
                 running = False
 
-                # Wechsle ins Lobby-Modul (async-Funktion korrekt starten)
-                from Casino.Lobby.Scripts.Lobby import game
+            # Nur bei Tastendruck hat event.key
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    return
 
-                try:
-                    loop = asyncio.get_running_loop()
-                except RuntimeError:
-                    asyncio.run(game())
-                else:
-                    loop.create_task(game())
+                elif event.key == pygame.K_SPACE:
+                    # Neue Kugel drehen
+                    ball_visible = False
+                    ball_position = None
+                    random_number()
 
-                break  # verlasse die for-Schleife; while endet durch running=False
+                elif event.key == pygame.K_g:
+                    all_chips = ChipData.get_all_chips()
+                    chips_back_to_spawn()
 
-            elif event.key == pygame.K_SPACE:
-                # Neue Kugel drehen
-                ball_visible = False
-                ball_position = None
-                last_result = None
-                random_number()
+            # === Chip Drag & Drop ===
+            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                for chip in reversed(all_chips):  # nur obersten Chip aktivieren
+                    if chip.collides_with_point(event.pos):
+                        active_chip = chip
+                        chip.dragging = True
+                        mouse_x, mouse_y = event.pos
+                        chip.drag_offset = (
+                            mouse_x - chip.pos[0],
+                            mouse_y - chip.pos[1]
+                        )
+                        # Chip nach oben bringen
+                        all_chips.remove(chip)
+                        all_chips.append(chip)
+                        break
 
-            elif event.key == pygame.K_g:
-                chips_back_to_spawn()
+            elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+                if active_chip:
+                    active_chip.dragging = False
+                    active_chip = None
 
-        # === Chip Drag & Drop ===
-        elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-            for chip in reversed(all_chips):  # nur obersten Chip aktivieren
-                if chip.collides_with_point(event.pos):
-                    active_chip = chip
-                    chip.dragging = True
+            elif event.type == pygame.MOUSEMOTION:
+                if active_chip and active_chip.dragging:
                     mouse_x, mouse_y = event.pos
-                    chip.drag_offset = (
-                        mouse_x - chip.pos[0],
-                        mouse_y - chip.pos[1]
+                    active_chip.pos = (
+                        mouse_x - active_chip.drag_offset[0],
+                        mouse_y - active_chip.drag_offset[1]
                     )
-                    # Chip nach oben bringen
-                    all_chips.remove(chip)
-                    all_chips.append(chip)
-                    break
 
-        elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
-            if active_chip:
-                active_chip.dragging = False
-                active_chip = None
+        # Frame zeichnen
+        screen.fill((50, 50, 50))
+        draw_wheel()
+        draw_field()
+        for chip in all_chips:
+            chip.draw(screen)
 
-        elif event.type == pygame.MOUSEMOTION:
-            if active_chip and active_chip.dragging:
-                mouse_x, mouse_y = event.pos
-                active_chip.pos = (
-                    mouse_x - active_chip.drag_offset[0],
-                    mouse_y - active_chip.drag_offset[1]
-                )
+        if ball_visible and ball_position:
+            pygame.draw.circle(screen, WHITE, ball_position, 12)
 
-    # Frame zeichnen
-    screen.fill((50, 50, 50))
-    draw_wheel()
-    draw_field()
-    for chip in all_chips:
-        chip.draw(screen)
+        pygame.display.flip()
+        clock.tick(60)
 
-    if ball_visible and ball_position:
-        pygame.draw.circle(screen, WHITE, ball_position, 12)
+    # Nach Verlassen der Schleife: Pygame beenden
+    print("Thanks for playing!")
+    pygame.quit()
 
-    pygame.display.flip()
-    clock.tick(60)
-
-# Nach Verlassen der Schleife: Pygame beenden
-print("Thanks for playing!")
-pygame.quit()
-sys.exit()
+if __name__ == "__main__":
+    main()
