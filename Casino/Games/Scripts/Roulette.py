@@ -4,6 +4,7 @@ import json
 import math
 from Casino.Bank.Scripts.Bank import ChipData
 from Casino.Bank.Scripts.chip import Chips
+
 screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)  # oder feste Größe
 screen_size = screen.get_size()
 
@@ -30,6 +31,7 @@ try:
     with open("../../Bank/Data/coin.json", "r") as f:
         daten = json.load(f)
     coins = daten["coin"]
+
 except FileNotFoundError:
     coins = 100
     daten = {"coin": coins}
@@ -57,7 +59,7 @@ def draw_wheel():
     pygame.draw.circle(screen, GOLD, CENTER, int(50 * X_SCALE))
     angle = start_angle
     for i in range(38):
-        draw_Edge(angle)
+        draw_edge(angle)
         angle += SLICE_ANGLE
     angle = start_angle
     for i in range(4):
@@ -86,7 +88,7 @@ def draw_slice(angle, color, index):
     text_rect = text.get_rect(center=(x, y))
     screen.blit(text, text_rect)
 
-def draw_Edge(angle):
+def draw_edge(angle):
     # Nutze denselben Mittelwinkel wie in draw_slice
     a = math.radians((angle + 5) + SLICE_ANGLE / 2)
 
@@ -245,6 +247,11 @@ def draw_field():
     font = pygame.font.SysFont(None, int(36 * Y_SCALE))
     screen.blit(font.render(f"Coins: {coins}" , True, WHITE), scale(10, 10))
 
+
+ball_visible = False
+ball_position = None
+last_result = None
+
 def random_number():
     base_ball_radius = 225 * X_SCALE
     start_angle = -90
@@ -288,13 +295,6 @@ def random_number():
 
         if angle - start_angle >= total_spin_degrees:
             spinning = False
-
-    global ball_position, ball_visible, last_result
-    ball_position = (int(ball_x), int(ball_y))
-    last_result = numbers[target_index]
-    result = last_result
-    ball_visible = True
-
 
     def calculator():
 
@@ -500,15 +500,25 @@ def random_number():
         daten["coin"] += gewinn
         with open("../../Bank/Data/coin.json", "w") as f:
             json.dump(daten, f, indent=4)
+
+    # Ergebnis berechnen
+    global ball_position, ball_visible, last_result
+
+    # Finale Zahl berechnen
+    final_angle = angle % 360
+    adjusted_angle = (final_angle + 95) % 360  # Korrektur je nach Startwinkel / Ausrichtung
+    index = int(adjusted_angle // SLICE_ANGLE)
+    result = numbers[index]
+
+    ball_position = (int(ball_x), int(ball_y))  # speichere Ballposition
+    last_result = result
+    ball_visible = True  # Ball soll nun angezeigt bleiben
     print(result)
     calculator()
 
 def chips_back_to_spawn():
 
     configs = ChipData.chip_configs()
-
-
-
     ypos_start = HEIGHT * 0.85
     xpos = WIDTH * 0.55
 
@@ -526,7 +536,7 @@ def spawn_all_chips():
     xpos = WIDTH * 0.55
 
     configs = ChipData.chip_configs()
-    chip_images = {}  # {value: loaded_surface}
+    chip_images = {}
 
     for config in configs:
         value = config["value"]
@@ -554,19 +564,18 @@ def main():
     screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
     clock = pygame.time.Clock()
     pygame.display.set_caption("Roulette")
-
-    # SPIELFUNKTION-Variablen initialisieren
-    ball_visible = False
-    ball_position = None
-
     active_chip = None
-    spawnd = 0
-    if spawnd == 0:
+    with open("../../Bank/Data/coin.json", "r") as f:
+        daten = json.load(f)
+
+    if daten["is_spawned"] == 0:
         spawn_all_chips()
-        spawnd += 69
+        daten["is_spawned"] = 1
+        with open("../../Bank/Data/coin.json", "w") as f:
+            json.dump(daten, f, indent=4)
     all_chips = ChipData.get_all_chips()
 
-    # Hier könnte dein Game-Loop starten, z.B.:
+
     running = True
     while running and coins > 0:
         for event in pygame.event.get():
@@ -580,8 +589,6 @@ def main():
 
                 elif event.key == pygame.K_SPACE:
                     # Neue Kugel drehen
-                    ball_visible = False
-                    ball_position = None
                     random_number()
 
                 elif event.key == pygame.K_g:
@@ -624,8 +631,9 @@ def main():
         for chip in all_chips:
             chip.draw(screen)
 
+        ball_radius = int((HEIGHT / 900) * 12)
         if ball_visible and ball_position:
-            pygame.draw.circle(screen, WHITE, ball_position, 12)
+            pygame.draw.circle(screen, WHITE, ball_position, ball_radius)
 
         pygame.display.flip()
         clock.tick(60)
