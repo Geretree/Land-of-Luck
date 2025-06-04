@@ -128,7 +128,6 @@ def main():
                     if rect3.collidepoint(mouse_pos):
                         chip_counts[index] += coins / count[]
 
-
         screen.fill(WHITE)
         draw_background()
 
