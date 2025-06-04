@@ -108,6 +108,7 @@ def generate_card():
     ]
 
     wahl = random.randint(1, 10)
+    form = random.randint(1, 4)
     if wahl == 1:
         kartenzahl = posforone
     elif wahl == 2:
