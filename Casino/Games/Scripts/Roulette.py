@@ -536,11 +536,20 @@ def spawn_all_chips():
     xpos = WIDTH * 0.55
 
     configs = ChipData.chip_configs()
-    chip_images = {}
 
     for config in configs:
+        config["list"].clear()
+
+    # ✅ Neue Chips aus gespeicherter Anzahl laden
+    with open("../../Bank/Data/coin.json", "r") as f:
+        daten = json.load(f)
+    chip_counts = daten.get("chip_counts", [0] * len(configs))
+
+    chip_images = {}
+
+    for index, config in enumerate(configs):
         value = config["value"]
-        count = config["count"]
+        count = chip_counts[index]
         chip_list = config["list"]
 
         if value not in chip_images:
@@ -558,6 +567,8 @@ def spawn_all_chips():
 
         ypos = HEIGHT * 0.85
         xpos += WIDTH * 0.06
+
+
 
 def main():
     pygame.init()
@@ -577,7 +588,7 @@ def main():
 
 
     running = True
-    while running and coins > 0:
+    while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -585,7 +596,21 @@ def main():
             # Nur bei Tastendruck hat event.key
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
+                    # chip_counts speichern
+                    chip_counts = [0] * len(ChipData.chip_configs())
+                    for index, config in enumerate(ChipData.chip_configs()):
+                        chip_counts[index] = len(config["list"])
+
+                    with open("../../Bank/Data/coin.json", "r") as f:
+                        daten = json.load(f)
+                    daten["chip_counts"] = chip_counts
+                    daten["is_spawned"] = 0  # neue Chips beim Start
+
+                    with open("../../Bank/Data/coin.json", "w") as f:
+                        json.dump(daten, f, indent=4)
+
                     return
+
 
                 elif event.key == pygame.K_SPACE:
                     # Neue Kugel drehen

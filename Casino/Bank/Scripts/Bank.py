@@ -2,8 +2,8 @@ from itertools import count
 from pickle import GLOBAL
 import json
 import pygame
+import sys
 
-chip_counts = [1, 1, 1, 1, 1, 1, 1] #database
 
 BLACK = (0, 0, 0)
 RED = (200, 0, 0)
@@ -25,6 +25,7 @@ with open("../../Bank/Data/coin.json", "r") as f:
     daten = json.load(f)
 
 coins = daten["coin"]
+chip_counts = daten.get("chip_counts", [0] * 7)
 
 def draw_background():
     rect_width = WIDTH * 0.05
@@ -42,6 +43,7 @@ def draw_background():
     click_rects_plus = []
     click_rects_minus = []
     click_rects_transfer = []
+    click_rects_reset = []
 
     configs = ChipData.chip_configs()
 
@@ -58,7 +60,21 @@ def draw_background():
         y += 90
 
     y = j * Y_SCALE
-    x -= 130
+    x -= 260
+    for i in range(7):
+        rect4 = pygame.Rect(x, y, w, h)
+        pygame.draw.rect(screen, WHITE, (x, y, w, h))
+        text_surface = font.render("X", True, BLACK)
+        text_rect = text_surface.get_rect(center=(x + w / 2, y + h / 2))  # zentrieren
+        screen.blit(text_surface, text_rect)
+        click_rects_reset.append((rect4, i))
+
+        # Text anzeigen
+        screen.blit(text_surface, text_rect)
+        y += 90
+
+    y = j * Y_SCALE
+    x += 130
     for i in range(7):
         rect2 = pygame.Rect(x, y, w, h)
         pygame.draw.rect(screen, RED, (x, y, w, h))
@@ -89,7 +105,7 @@ def draw_background():
     x += 130
     for i in range(7):
         count = str(configs[i]["count"])
-        rect = pygame.Rect(x, y, w, h)
+        rect = pygame.Rect(x, y, w + 200, h)
         pygame.draw.rect(screen, BLACK, rect)
         text_surface = font.render(count, True, WHITE)
         text_rect = text_surface.get_rect(center=rect.center)
@@ -98,39 +114,95 @@ def draw_background():
 
         y += 90
 
-    return click_rects_plus, click_rects_minus, click_rects_transfer
 
+    return click_rects_plus, click_rects_minus, click_rects_transfer, click_rects_reset
+def coin_counter():
+    with open("../../Bank/Data/coin.json", "r") as f:
+        daten = json.load(f)
+    coins = daten["coin"]
 
+    font = pygame.font.SysFont(None, int(36 * Y_SCALE))
+    screen.blit(font.render(f"Coins: {coins}" , True, BLACK), (100,100))
 
 def main():
     pygame.init()
     screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
     clock = pygame.time.Clock()
     running = True
-    click_rects_plus, click_rects_minus, click_rects_transfer = draw_background()
+    with open("../../Bank/Data/coin.json", "r") as f:
+        daten = json.load(f)
+
+    click_rects_plus, click_rects_minus, click_rects_transfer, click_rects_reset= draw_background()
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:  # ESC zum Beenden
-                    running = False
+                    daten["chip_counts"] = chip_counts
+
+                    with open("../../Bank/Data/coin.json", "w") as f:
+                        json.dump(daten, f, indent=4)
+                    return
 
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 mouse_pos = pygame.mouse.get_pos()
                 for rect, index in click_rects_plus:
-                    if rect.collidepoint(mouse_pos):
-                        chip_counts[index] += 1
-                for rect2, index in click_rects_minus:
-                    if rect2.collidepoint(mouse_pos):
-                        chip_counts[index] -= 1
+                    if rect.collidepoint(mouse_pos) and daten["coin"] > 0:
+                        with open("../../Bank/Data/coin.json", "r") as f:
+                            daten = json.load(f)
+
+                        if coins // configs[index]["value"] >= 1:
+                            chip_counts[index] += 1
+                            daten["coin"] -= configs[index]["value"]
+
+                        with open("../../Bank/Data/coin.json", "w") as f:
+                            json.dump(daten, f, indent=4)
+
                 for rect3, index in click_rects_transfer:
-                    if rect3.collidepoint(mouse_pos):
-                        chip_counts[index] += coins / count[]
+                    if rect3.collidepoint(mouse_pos) and daten["coin"] > 0:
+                        with open("../../Bank/Data/coin.json", "r") as f:
+                            daten = json.load(f)
 
+                        amount = coins // configs[index]["value"]  # ganze Anzahl Chips
+                        chip_counts[index] += amount
+                        daten["coin"] -= amount * configs[index]["value"]
 
+                        with open("../../Bank/Data/coin.json", "w") as f:
+                            json.dump(daten, f, indent=4)
+
+                for rect2, index in click_rects_minus:
+                    if rect2.collidepoint(mouse_pos) and chip_counts[index] > 0:
+                        with open("../../Bank/Data/coin.json", "r") as f:
+                            daten = json.load(f)
+
+                        chip_counts[index] -= 1
+                        daten["coin"] += configs[index]["value"]
+
+                        with open("../../Bank/Data/coin.json", "w") as f:
+                            json.dump(daten, f, indent=4)
+
+                for rect4, index in click_rects_reset:
+                    if rect4.collidepoint(mouse_pos) and chip_counts[index] > 0:
+                        with open("../../Bank/Data/coin.json", "r") as f:
+                            daten = json.load(f)
+
+                        value_per_chip = configs[index]["value"]
+                        chip_amount = chip_counts[index]
+                        refund = chip_amount * value_per_chip
+
+                        # Rückerstatten und Chips zurücksetzen
+                        daten["coin"] += refund
+                        chip_counts[index] = 0
+                        daten["chip_counts"] = chip_counts
+
+                        with open("../../Bank/Data/coin.json", "w") as f:
+                            json.dump(daten, f, indent=4)
+
+        configs = ChipData.chip_configs()
         screen.fill(WHITE)
         draw_background()
+        coin_counter()
 
         pygame.display.flip()
         clock.tick(60)
