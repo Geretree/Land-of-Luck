@@ -1,161 +1,177 @@
-import tkinter as tk
-from tkinter import messagebox
+# Casino/Lobby/Scripts/Lobby.py
+import pygame
+import traceback
+import json
 import sys
 import os
-import requests
-import urllib3
 
-# Füge den Projektroot-Pfad hinzu, um Casino.Lobby.Scripts zu importieren
+# Fügen Sie den Projektroot-Pfad zum Systempfad hinzu
 current_dir = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.dirname(os.path.dirname(os.path.dirname(current_dir)))
 sys.path.append(project_root)
 
-# Unterdrückt SSL-Warnungen (nur für lokale Tests, nicht für Produktion!)
-#urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-
-BASE_URL = "http://backend.casino.itservsec.dev/api/users"
-HEADERS = {"X-API-KEY": "your-api-key-here"}  # Ersetze mit deinem API-Schlüssel
+from Casino.Games.Scripts import Einarmiger_Bandit
+from Casino.Games.Scripts import Roulette
 
 
-def print_response(response):
-    print(f"Status Code: {response.status_code}")
+# === Farben ===
+BLACK = (0, 0, 0)
+RED = (200, 0, 0)
+GREEN = (45, 117, 16)
+WHITE = (255, 255, 255)
+BROWN = (156, 86, 12)
+GOLD = (215, 162, 20)
+
+try:
+    with open("../../Bank/Data/spawnd_chips.json", "r") as f:
+        daten = json.load(f)
+    chips = daten["roulette_chips"]
+except FileNotFoundError:
+    chips = 100
+    daten = {"roulette_chips": chips}
+
+
+with open("../../Bank/Data/coin.json", "r") as f:
+    daten = json.load(f)
+
+daten["is_spawned"] = 0
+with open("../../Bank/Data/coin.json", "w") as f:
+    json.dump(daten, f, indent=4)
+
+pygame.init()
+screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+clock = pygame.time.Clock()
+win_width, win_height = pygame.display.get_surface().get_size()
+
+# Spieler
+peter_size = pygame.Vector2(60, 60)
+peter_pos = pygame.Vector2()
+
+# Bandit
+bandit_size = pygame.Vector2(100, 100)
+bandit_pos = pygame.Vector2(200, 200)
+
+# Roulette
+roulette_size = pygame.Vector2(200, 200)
+roulette_pos = pygame.Vector2(200, 400)
+
+#Save setzen
+save_size = pygame.Vector2(100, 100)
+save_pos = pygame.Vector2(400, 600)
+
+# Assets laden mit ursprünglichen Pfaden
+peter_image = pygame.image.load("../../Images/Happy_Man.png")
+peter_image = pygame.transform.scale(peter_image, peter_size)
+
+bandit_image = pygame.image.load("../../Images/bandit.png")
+bandit_image = pygame.transform.scale(bandit_image, bandit_size)
+
+roulette_image = pygame.image.load("../../Images/Roulette_table.png")
+roulette_image = pygame.transform.scale(roulette_image, roulette_size)
+
+save_image = pygame.image.load("../../Images/Speichern.png")
+save_image = pygame.transform.scale(save_image, save_size)
+
+running = True
+dt = 0.0
+
+# —————————————————————————————————————————————————————————————
+# Spiel-Funktionen
+# —————————————————————————————————————————————————————————————
+def reset_game():
+    global peter_pos
+    peter_pos = pygame.Vector2(
+        win_width/2 - peter_size.x/2,
+        win_height/2 - peter_size.y/2
+    )
+
+def peter_player():
+    global running, dt
+    screen.blit(peter_image, (int(peter_pos.x), int(peter_pos.y)))
+
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_q]: running = False
+    speed = 300
+    if keys[pygame.K_w]: peter_pos.y -= speed * dt
+    if keys[pygame.K_s]: peter_pos.y += speed * dt
+    if keys[pygame.K_a]: peter_pos.x -= speed * dt
+    if keys[pygame.K_d]: peter_pos.x += speed * dt
+
+    # Bildschirmgrenzen prüfen
+    if (peter_pos.x < 0 or peter_pos.x + peter_size.x > win_width or
+        peter_pos.y < 0 or peter_pos.y + peter_size.y > win_height):
+        reset_game()
+
+
+def spawn_bandit():
+    screen.blit(bandit_image, bandit_pos)
+
+
+def spawn_roulette():
+    screen.blit(roulette_image, roulette_pos)
+
+def spawn_save():
+    screen.blit(save_image, save_pos)
+
+def save_game():
+    pass
+
+
+def check_collision():
+    global dt
+    rect_p = pygame.Rect(peter_pos.x, peter_pos.y, *peter_size)
+    rect_b = pygame.Rect(bandit_pos.x, bandit_pos.y, *bandit_size)
+    rect_r = pygame.Rect(roulette_pos.x, roulette_pos.y, *roulette_size)
+    rect_s = pygame.Rect(save_pos.x, save_pos.y + 200, *save_size)
+    keys = pygame.key.get_pressed()
+
+    if rect_p.colliderect(rect_b) and keys[pygame.K_SPACE]:
+        Einarmiger_Bandit.main()
+
+    if rect_p.colliderect(rect_r) and keys[pygame.K_SPACE]:
+        Roulette.main()
+
+    if rect_p.colliderect(rect_s) and keys[pygame.K_SPACE]:
+        save_game()  # Rufe die Speicherfunktion auf
+
+
+# —————————————————————————————————————————————————————————————
+# Der asynchrone Game-Loop mit Debugging
+# —————————————————————————————————————————————————————————————
+def game():
+    global running, dt
+    # Sicherstellen, dass running True ist
+    running = True
+    reset_game()
+    print("Game started, running initial:", running)
     try:
-        print(f"Response: {response.json()}")
-    except ValueError:
-        print(f"Response: {response.text}")
+        while running:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
 
-#Log In
-def show_login():
-    clear_fields()
-    window_title.set("Login")
-    submit_button.config(text="Login", command=lambda: submit("login"))
+            # Roter Hintergrund-Test zum Debuggen
+            screen.fill(WHITE)
+            spawn_bandit()
+            spawn_roulette()
+            spawn_save()
+            peter_player()
+            check_collision()
 
-#Sign In
-def show_sign_in():
-    clear_fields()
-    window_title.set("Sign In")
-    submit_button.config(text="Sign In", command=lambda: submit("signin"))
-
-#Felder Säubern
-def clear_fields():
-    username_entry.delete(0, tk.END)
-    password_entry.delete(0, tk.END)
+            pygame.display.flip()
+            dt = clock.tick(60) / 1000.0
 
 
-def user_action(username, password, action):
-    try:
-        if action == "login":
-            response = requests.get(BASE_URL, headers=HEADERS, verify=False)
+    except Exception:
+        traceback.print_exc()
+    finally:
+        # Deaktiviert, damit Browser nicht sofort schließt
+        # pygame.quit()
+        print("Game exited")
+        pygame.quit()
 
-            # Prüfe die Antwort
-            if response.status_code != 200:
-                try:
-                    error_msg = response.json().get("message", "Fehler beim Abrufen der Benutzer.")
-                except ValueError:
-                    error_msg = response.text or "Unbekannter Fehler."
-                messagebox.showerror("Login Fehler", error_msg)
-                return False
+def main():
+    game()
 
-            # Filtere die Benutzerliste nach Benutzername
-            try:
-                users = response.json()  # Angenommen, es ist eine Liste von Benutzern
-                matching_user = next((user for user in users if user.get("username") == username), None)
-
-                if matching_user is None:
-                    messagebox.showerror("Login Fehler", "Benutzername nicht gefunden.")
-                    return False
-
-                # Vergleiche das Passwort (angenommen, es ist im Klartext)
-                if matching_user.get("password") == password:
-                    messagebox.showinfo("Erfolg", "Login erfolgreich!")
-                    return True  # Erfolg, um Lobby.main() zu starten
-                else:
-                    messagebox.showerror("Login Fehler", "Falsches Passwort.")
-                    return False
-            except ValueError:
-                messagebox.showerror("Login Fehler", "Ungültige API-Antwort.")
-                return False
-
-        elif action == "signin":
-            # API-Anfrage zum Speichern des neuen Benutzers
-            data = {
-                "username": username,
-                "password": password
-            }
-            response = requests.post(BASE_URL, json=data, headers=HEADERS, verify=False)
-            print_response(response)  # Nutze print_response für Debugging
-
-            # Prüfe die Antwort
-            if response.status_code in [200, 201]:  # 201 Created ist üblich für POST
-                messagebox.showinfo("Erfolg", "Registrierung erfolgreich!")
-                return True  # Erfolg, um Lobby.main() zu starten
-            else:
-                try:
-                    error_msg = response.json().get("message", "Registrierung fehlgeschlagen.")
-                except ValueError:
-                    error_msg = response.text or "Unbekannter Fehler."
-                messagebox.showerror("Sign In Fehler", error_msg)
-                return False
-
-    except requests.RequestException as e:
-        messagebox.showerror("Netzwerkfehler", f"Verbindungsfehler: {str(e)}")
-        return False
-
-#Ende und Verarbeitung
-def submit(action):
-    username = username_entry.get()
-    password = password_entry.get()
-
-    if not username or not password:
-        messagebox.showerror("Fehler", "Bitte Benutzername und Passwort eingeben.")
-        return
-
-    # Führe die Benutzeraktion aus
-    success = user_action(username, password, action)
-
-    if success:
-        # Schließe das tkinter-Fenster
-        root.destroy()
-
-        # Starte das Lobby-Skript
-        try:
-            from Casino.Lobby.Scripts import Lobby
-            Lobby.main()
-        except Exception as e:
-            print(f"Fehler beim Starten von Lobby: {e}")
-            sys.exit()
-
-
-# Erstelle das Hauptfenster
-root = tk.Tk()
-root.title("Benutzerdaten eingeben")
-root.geometry("400x300")  # Fenstergröße
-root.configure(bg="#2c3e50")  # Dunkler Hintergrund
-
-# Variable für Fenstertitel
-window_title = tk.StringVar()
-window_title.set("Login")
-
-# Titel-Label
-tk.Label(root, textvariable=window_title, bg="#2c3e50", fg="white", font=("Arial", 14, "bold")).pack(pady=10)
-
-# Buttons für Login/Sign In Auswahl
-tk.Button(root, text="Login", command=show_login, bg="#3498db", fg="white", font=("Arial", 12)).pack(pady=5)
-tk.Button(root, text="Sign In", command=show_sign_in, bg="#3498db", fg="white", font=("Arial", 12)).pack(pady=5)
-
-# Labels und Eingabefelder
-tk.Label(root, text="Benutzername:", bg="#2c3e50", fg="white", font=("Arial", 12)).pack(pady=10)
-username_entry = tk.Entry(root, width=30, font=("Arial", 12))
-username_entry.pack(pady=5)
-
-tk.Label(root, text="Passwort:", bg="#2c3e50", fg="white", font=("Arial", 12)).pack(pady=10)
-password_entry = tk.Entry(root, width=30, show="*", font=("Arial", 12))  # Passwort maskiert
-password_entry.pack(pady=5)
-
-# Submit-Button (wird dynamisch angepasst)
-submit_button = tk.Button(root, text="Login", command=lambda: submit("login"), bg="#27ae60", fg="white",
-                          font=("Arial", 12))
-submit_button.pack(pady=20)
-
-# Starte das Fenster
-root.mainloop()
+if __name__ == "__main__":
+    main()
