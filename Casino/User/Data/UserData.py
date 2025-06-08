@@ -10,12 +10,13 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.dirname(os.path.dirname(os.path.dirname(current_dir)))
 sys.path.append(project_root)
 
+
+
 # Unterdrückt SSL-Warnungen (nur für lokale Tests, nicht für Produktion!)
-#urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 BASE_URL = "http://backend.casino.itservsec.dev/api/users"
 HEADERS = {"X-API-KEY": "your-api-key-here"}  # Ersetze mit deinem API-Schlüssel
-
 
 def print_response(response):
     print(f"Status Code: {response.status_code}")
@@ -24,27 +25,33 @@ def print_response(response):
     except ValueError:
         print(f"Response: {response.text}")
 
-#Log In
+
+
 def show_login():
+    """Zeigt die Eingabefelder für Login an."""
     clear_fields()
     window_title.set("Login")
     submit_button.config(text="Login", command=lambda: submit("login"))
 
-#Sign In
+
 def show_sign_in():
+    """Zeigt die Eingabefelder für Sign In an."""
     clear_fields()
     window_title.set("Sign In")
     submit_button.config(text="Sign In", command=lambda: submit("signin"))
 
-#Felder Säubern
+
 def clear_fields():
+    """Löscht die Eingabefelder."""
     username_entry.delete(0, tk.END)
     password_entry.delete(0, tk.END)
 
 
 def user_action(username, password, action):
+    """Verarbeitet Login oder Sign In über API-Aufrufe."""
     try:
         if action == "login":
+            # Hole alle Benutzer mit der GET-Anfrage (wie in list_users())
             response = requests.get(BASE_URL, headers=HEADERS, verify=False)
 
             # Prüfe die Antwort
@@ -83,7 +90,6 @@ def user_action(username, password, action):
                 "password": password
             }
             response = requests.post(BASE_URL, json=data, headers=HEADERS, verify=False)
-            print_response(response)  # Nutze print_response für Debugging
 
             # Prüfe die Antwort
             if response.status_code in [200, 201]:  # 201 Created ist üblich für POST
@@ -101,8 +107,9 @@ def user_action(username, password, action):
         messagebox.showerror("Netzwerkfehler", f"Verbindungsfehler: {str(e)}")
         return False
 
-#Ende und Verarbeitung
+
 def submit(action):
+    """Verarbeitet die Eingabe und startet Lobby.py."""
     username = username_entry.get()
     password = password_entry.get()
 
@@ -110,20 +117,20 @@ def submit(action):
         messagebox.showerror("Fehler", "Bitte Benutzername und Passwort eingeben.")
         return
 
-    # Führe die Benutzeraktion aus
-    success = user_action(username, password, action)
+    # Zeige Bestätigung (kein Speichern der Daten)
+    messagebox.showinfo("Eingabe", f"{action.capitalize()} - Benutzername: {username}, Passwort: {'*' * len(password)}")
 
-    if success:
-        # Schließe das tkinter-Fenster
-        root.destroy()
+    user_action(username, password, action)
 
-        # Starte das Lobby-Skript
-        try:
-            from Casino.Lobby.Scripts import Lobby
-            Lobby.main()
-        except Exception as e:
-            print(f"Fehler beim Starten von Lobby: {e}")
-            sys.exit()
+    # Schließe das tkinter-Fenster
+    root.destroy()
+
+    # Starte das Lobby-Skript
+    #try:
+    #    Lobby.main()
+#  except Exception as e:
+#     print(f"Fehler beim Starten von Lobby: {e}")
+#      sys.exit()#
 
 
 # Erstelle das Hauptfenster
