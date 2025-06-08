@@ -5,7 +5,7 @@ import os
 import requests
 import urllib3
 
-# Füge den Projektroot-Pfad hinzu, um Casino.Lobby.Scripts zu importieren
+# Füge den Projektroot-Pfad hinzu, um Casino.Lobby.Scripts zu importieren.
 current_dir = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.dirname(os.path.dirname(os.path.dirname(current_dir)))
 sys.path.append(project_root)
