@@ -21,6 +21,14 @@ except FileNotFoundError:
     chips = 100
     daten = {"roulette_chips": chips}
 
+
+with open("../../Bank/Data/coin.json", "r") as f:
+    daten = json.load(f)
+
+daten["is_spawned"] = 0
+with open("../../Bank/Data/coin.json", "w") as f:
+    json.dump(daten, f, indent=4)
+
 pygame.init()
 screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
 clock = pygame.time.Clock()
