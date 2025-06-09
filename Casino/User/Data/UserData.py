@@ -18,7 +18,7 @@ sys.path.append(project_root)
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 BASE_URL = "http://backend.casino.itservsec.dev/api/users"
-HEADERS = {"X-API-KEY": "SuperGeheim"}  # Ersetze mit deinem API-Schlüssel
+HEADERS = {"X-API-KEY": "Key"}  # Ersetze mit deinem API-Schlüssel
 
 def print_response(response):
     print(f"Status Code: {response.status_code}")
