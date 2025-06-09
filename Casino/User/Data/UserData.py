@@ -10,13 +10,15 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.dirname(os.path.dirname(os.path.dirname(current_dir)))
 sys.path.append(project_root)
 
+#from Casino.Lobby.Scripts import Lobby
+
 
 
 # Unterdrückt SSL-Warnungen (nur für lokale Tests, nicht für Produktion!)
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 BASE_URL = "http://backend.casino.itservsec.dev/api/users"
-HEADERS = {"X-API-KEY": "your-api-key-here"}  # Ersetze mit deinem API-Schlüssel
+HEADERS = {"X-API-KEY": "Gh<7Q^2*Ka9S'IyR44C*n}jceq!V}81OZ%xa/_#C6\*c6!TxcX"}  # Ersetze mit deinem API-Schlüssel
 
 def print_response(response):
     print(f"Status Code: {response.status_code}")
@@ -117,20 +119,22 @@ def submit(action):
         messagebox.showerror("Fehler", "Bitte Benutzername und Passwort eingeben.")
         return
 
-    # Zeige Bestätigung (kein Speichern der Daten)
+    # Zeige Bestätigung (optional)
     messagebox.showinfo("Eingabe", f"{action.capitalize()} - Benutzername: {username}, Passwort: {'*' * len(password)}")
 
-    user_action(username, password, action)
+    success = user_action(username, password, action)
 
-    # Schließe das tkinter-Fenster
-    root.destroy()
+    if success:
+        # Schließe das tkinter-Fenster
+        root.destroy()
 
-    # Starte das Lobby-Skript
-    #try:
-    #    Lobby.main()
-#  except Exception as e:
-#     print(f"Fehler beim Starten von Lobby: {e}")
-#      sys.exit()#
+        # Starte das Lobby-Skript
+        try:
+            from Casino.Lobby.Scripts import Lobby  # <-- Import NUR HIER!
+            Lobby.main()
+        except Exception as e:
+            print(f"Fehler beim Starten von Lobby: {e}")
+            sys.exit()
 
 
 # Erstelle das Hauptfenster
