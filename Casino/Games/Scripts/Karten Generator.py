@@ -142,15 +142,47 @@ def generate_card():
         ]
         pygame.draw.polygon(screen, RED, points)
 
+    def Dreieck(center_x, center_y):
+        half = size // 4
+        points1 = [
+            (center_x, center_y - half - 5),  # oben
+            (center_x + half, center_y),  # rechts
+            (center_x - half, center_y)  # links
+        ]
+        pygame.draw.polygon(screen, RED, points1)
+        points2 = [
+            (center_x + half, center_y - half - 5),  # oben
+            (center_x + half + half, center_y),  # rechts
+            (center_x, center_y)  # links
+        ]
+        pygame.draw.polygon(screen, RED, points2)
+        points3 = [
+            (center_x, center_y - half - 5),  # oben
+            (center_x + half, center_y),  # rechts
+            (center_x, center_y + half + 5),  # unten
+            (center_x - half, center_y)  # links
+        ]
 
+
+    def Kreis(center_x, center_y):
+        points = (center_x, center_y)  # Mitte
+        pygame.draw.circle(screen, BLACK, points, (size / 2))
+
+    form = random.randint(1, 3)
+    if form == 1:
+        formwahl = Ecke
+    elif form == 2:
+        formwahl = Dreieck
+    elif form == 3:
+        formwahl = Kreis
 
     for center in mittelpunkte:
         size = 30
-        Ecke(*center)  # *center entpackt (x, y)
+        formwahl(*center)  # *center entpackt (x, y)
 
     for center in kartenzahl:
         size = 40
-        Ecke(*center)  # *center entpackt (x, y)
+        formwahl(*center)  # *center entpackt (x, y)
 
 
 # Hauptloop
