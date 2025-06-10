@@ -1,4 +1,5 @@
 {
+    "is_spawned": 1,
     "ID_USER": 1,
     "USERNAME": "testuser",
     "Password": "Test@1234",
@@ -9,5 +10,4 @@
     "chip100_chips": 0,
     "chip500_chips": 0,
     "chip1000_chips": 0,
-    "chip5000_chips": 0
-}
+    "chip5000_chips": 0}
