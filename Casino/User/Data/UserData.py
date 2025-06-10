@@ -38,6 +38,14 @@ def validate_password(password):
     return False
 
 
+def validate_username(username):
+    """Prüft, ob der Benutzername nur Buchstaben und Zahlen enthält."""
+    pattern = r"^[a-zA-Z0-9]+$"
+    if re.match(pattern, username):
+        return True
+    return False
+
+
 def write_user_to_json(user_data):
     """Schreibt die Benutzerdaten in die JSON-Datei im gewünschten Format."""
     try:
@@ -90,6 +98,11 @@ def clear_fields():
 
 def user_action(username, password, action):
     """Verarbeitet Login oder Sign In über API-Aufrufe und schreibt Daten in JSON."""
+    # Benutzernamen validieren (nur Buchstaben und Zahlen)
+    if not validate_username(username):
+        messagebox.showerror("Fehler", "Benutzername darf nur Buchstaben (a-z, A-Z) und Zahlen (0-9) enthalten.")
+        return False, None
+
     # Passwortvalidierung nur bei Sign In
     if action == "signin" and not validate_password(password):
         messagebox.showerror("Fehler",
