@@ -14,14 +14,6 @@ WHITE = (255, 255, 255)
 BROWN = (156, 86, 12)
 GOLD = (215, 162, 20)
 
-try:
-    with open("../../Bank/Data/spawnd_chips.json", "r") as f:
-        daten = json.load(f)
-    chips = daten["roulette_chips"]
-except FileNotFoundError:
-    chips = 100
-    daten = {"roulette_chips": chips}
-
 
 with open("../../Bank/Data/coin.json", "r") as f:
     daten = json.load(f)

@@ -3,7 +3,7 @@ import pygame
 import sys
 import os
 import subprocess
-from tkinter import messagebox
+
 
 BLACK = (0, 0, 0)
 RED = (200, 0, 0)
@@ -169,7 +169,6 @@ def main():
                 running = False
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:  # ESC zum Beenden
-                    daten["chip_counts"] = chip_counts
 
                     with open("../../Bank/Data/coin.json", "w") as f:
                         json.dump(daten, f, indent=4)
