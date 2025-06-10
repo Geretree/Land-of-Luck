@@ -31,7 +31,7 @@ def print_response(response):
 
 
 def validate_password(password):
-    """Prüft, ob das Passwort den Anforderungen entspricht."""
+    """Prüft, ob das Passwort den Anforderungen entspriccht."""
     pattern = r"^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
     if re.match(pattern, password):
         return True
