@@ -4,9 +4,36 @@ import json
 import math
 from Casino.Bank.Scripts.Bank import ChipData
 from Casino.Bank.Scripts.chip import Chips
+import sys
+import os
+import subprocess
 
 screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)  # oder feste Größe
 screen_size = screen.get_size()
+
+# Füge den Projektroot-Pfad hinzu
+current_dir = os.path.dirname(os.path.abspath(__file__))
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(current_dir)))
+sys.path.append(project_root)
+
+# Pfad zum Update-Skript
+UPDATE_SCRIPT_PATH = os.path.join(project_root, "Casino", "User", "Data", "InsertIntoDatabase.py")
+
+
+# Funktion zum Updaten der User Daten
+def start_update_script():
+    """Startet das Update-Skript als separater Prozess."""
+    try:
+        # Prüfe, ob das Update-Skript existiert
+        if not os.path.exists(UPDATE_SCRIPT_PATH):
+            print(f"Fehler: Update-Skript nicht gefunden: {UPDATE_SCRIPT_PATH}")
+            return
+
+        # Starte das Update-Skript als separater Prozess
+        subprocess.Popen([sys.executable, UPDATE_SCRIPT_PATH], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        print("Update-Skript wurde im Hintergrund gestartet.")
+    except Exception as e:
+        print(f"Fehler beim Starten des Update-Skripts: {str(e)}")
 
 # === Farben ===
 BLACK = (0, 0, 0)
@@ -536,11 +563,20 @@ def spawn_all_chips():
     xpos = WIDTH * 0.55
 
     configs = ChipData.chip_configs()
-    chip_images = {}
 
     for config in configs:
+        config["list"].clear()
+
+    # ✅ Neue Chips aus gespeicherter Anzahl laden
+    with open("../../Bank/Data/coin.json", "r") as f:
+        daten = json.load(f)
+    chip_counts = daten.get("chip_counts", [0] * len(configs))
+
+    chip_images = {}
+
+    for index, config in enumerate(configs):
         value = config["value"]
-        count = config["count"]
+        count = chip_counts[index]
         chip_list = config["list"]
 
         if value not in chip_images:
@@ -558,6 +594,8 @@ def spawn_all_chips():
 
         ypos = HEIGHT * 0.85
         xpos += WIDTH * 0.06
+
+
 
 def main():
     pygame.init()
@@ -577,7 +615,7 @@ def main():
 
 
     running = True
-    while running and coins > 0:
+    while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -585,7 +623,21 @@ def main():
             # Nur bei Tastendruck hat event.key
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
+                    # chip_counts speichern
+                    chip_counts = [0] * len(ChipData.chip_configs())
+                    for index, config in enumerate(ChipData.chip_configs()):
+                        chip_counts[index] = len(config["list"])
+
+                    with open("../../Bank/Data/coin.json", "r") as f:
+                        daten = json.load(f)
+                    daten["chip_counts"] = chip_counts
+                    daten["is_spawned"] = 0  # neue Chips beim Start
+
+                    with open("../../Bank/Data/coin.json", "w") as f:
+                        json.dump(daten, f, indent=4)
+                    start_update_script()
                     return
+
 
                 elif event.key == pygame.K_SPACE:
                     # Neue Kugel drehen
