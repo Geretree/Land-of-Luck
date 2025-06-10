@@ -4,21 +4,23 @@ import sys
 import os
 import requests
 import urllib3
+import re  # Für Regex
+import json  # Für JSON-Dateioperationen
 
 # Füge den Projektroot-Pfad hinzu, um Casino.Lobby.Scripts zu importieren
 current_dir = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.dirname(os.path.dirname(os.path.dirname(current_dir)))
 sys.path.append(project_root)
 
-#from Casino.Lobby.Scripts import Lobby
-
-
+# Pfad zur JSON-Datei
+JSON_FILE_PATH = os.path.join(project_root, "Casino", "Bank", "Coin.json")
 
 # Unterdrückt SSL-Warnungen (nur für lokale Tests, nicht für Produktion!)
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 BASE_URL = "http://backend.casino.itservsec.dev/api/users"
 HEADERS = {"X-API-KEY": "Key"}  # Ersetze mit deinem API-Schlüssel
+
 
 def print_response(response):
     print(f"Status Code: {response.status_code}")
@@ -27,6 +29,43 @@ def print_response(response):
     except ValueError:
         print(f"Response: {response.text}")
 
+
+def validate_password(password):
+    """Prüft, ob das Passwort den Anforderungen entspricht."""
+    pattern = r"^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
+    if re.match(pattern, password):
+        return True
+    return False
+
+
+def write_user_to_json(user_data):
+    """Schreibt die Benutzerdaten in die JSON-Datei im gewünschten Format."""
+    try:
+        # Erstelle das Verzeichnis, falls es nicht existiert
+        os.makedirs(os.path.dirname(JSON_FILE_PATH), exist_ok=True)
+
+        # Transformiere die Benutzerdaten in das gewünschte Format
+        transformed_data = {
+            "ID_USER": user_data.get("id", 1),  # Falls 'id' nicht existiert, Default 1
+            "USERNAME": user_data.get("username", ""),
+            "Password": user_data.get("password", ""),
+            "Coin": user_data.get("SCORE", 50),  # Umbenannt von SCORE zu Coins, Default 50
+            "chip5_chips": user_data.get("chip5_chips", 0),
+            "chip10_chips": user_data.get("chip10_chips", 0),
+            "chip50_chips": user_data.get("chip50_chips", 0),
+            "chip100_chips": user_data.get("chip100_chips", 0),
+            "chip500_chips": user_data.get("chip500_chips", 0),
+            "chip1000_chips": user_data.get("chip1000_chips", 0),
+            "chip5000_chips": user_data.get("chip5000_chips", 0)
+        }
+
+        # Schreibe die Benutzerdaten in die JSON-Datei
+        with open(JSON_FILE_PATH, 'w', encoding='utf-8') as f:
+            json.dump(transformed_data, f, indent=4)
+        print(f"Benutzerdaten erfolgreich in {JSON_FILE_PATH} geschrieben.")
+    except Exception as e:
+        print(f"Fehler beim Schreiben in die JSON-Datei: {e}")
+        messagebox.showerror("Fehler", f"Konnte Benutzerdaten nicht in JSON speichern: {str(e)}")
 
 
 def show_login():
@@ -50,64 +89,66 @@ def clear_fields():
 
 
 def user_action(username, password, action):
-    """Verarbeitet Login oder Sign In über API-Aufrufe."""
+    """Verarbeitet Login oder Sign In über API-Aufrufe und schreibt Daten in JSON."""
+    # Passwortvalidierung nur bei Sign In
+    if action == "signin" and not validate_password(password):
+        messagebox.showerror("Fehler",
+                             "Passwort muss mindestens 8 Zeichen lang sein und einen Großbuchstaben, Kleinbuchstaben, eine Zahl und ein Sonderzeichen enthalten.")
+        return False, None
+
     try:
         if action == "login":
-            # Hole alle Benutzer mit der GET-Anfrage (wie in list_users())
             response = requests.get(BASE_URL, headers=HEADERS, verify=False)
-
-            # Prüfe die Antwort
             if response.status_code != 200:
                 try:
                     error_msg = response.json().get("message", "Fehler beim Abrufen der Benutzer.")
                 except ValueError:
                     error_msg = response.text or "Unbekannter Fehler."
                 messagebox.showerror("Login Fehler", error_msg)
-                return False
+                return False, None
 
-            # Filtere die Benutzerliste nach Benutzername
             try:
-                users = response.json()  # Angenommen, es ist eine Liste von Benutzern
+                users = response.json()
                 matching_user = next((user for user in users if user.get("username") == username), None)
-
                 if matching_user is None:
                     messagebox.showerror("Login Fehler", "Benutzername nicht gefunden.")
-                    return False
-
-                # Vergleiche das Passwort (angenommen, es ist im Klartext)
+                    return False, None
                 if matching_user.get("password") == password:
                     messagebox.showinfo("Erfolg", "Login erfolgreich!")
-                    return True  # Erfolg, um Lobby.main() zu starten
+                    # Schreibe die Benutzerdaten in die JSON-Datei
+                    write_user_to_json(matching_user)
+                    return True, matching_user
                 else:
                     messagebox.showerror("Login Fehler", "Falsches Passwort.")
-                    return False
+                    return False, None
             except ValueError:
                 messagebox.showerror("Login Fehler", "Ungültige API-Antwort.")
-                return False
+                return False, None
 
         elif action == "signin":
-            # API-Anfrage zum Speichern des neuen Benutzers
             data = {
                 "username": username,
                 "password": password
             }
             response = requests.post(BASE_URL, json=data, headers=HEADERS, verify=False)
-
-            # Prüfe die Antwort
-            if response.status_code in [200, 201]:  # 201 Created ist üblich für POST
+            if response.status_code in [200, 201]:
                 messagebox.showinfo("Erfolg", "Registrierung erfolgreich!")
-                return True  # Erfolg, um Lobby.main() zu starten
+                # Hole die neuen Benutzerdaten (angenommen, die API gibt die neuen Daten zurück)
+                new_user_data = response.json()
+                # Schreibe die neuen Benutzerdaten in die JSON-Datei
+                write_user_to_json(new_user_data)
+                return True, new_user_data
             else:
                 try:
                     error_msg = response.json().get("message", "Registrierung fehlgeschlagen.")
                 except ValueError:
                     error_msg = response.text or "Unbekannter Fehler."
                 messagebox.showerror("Sign In Fehler", error_msg)
-                return False
+                return False, None
 
     except requests.RequestException as e:
         messagebox.showerror("Netzwerkfehler", f"Verbindungsfehler: {str(e)}")
-        return False
+        return False, None
 
 
 def submit(action):
@@ -122,15 +163,12 @@ def submit(action):
     # Zeige Bestätigung (optional)
     messagebox.showinfo("Eingabe", f"{action.capitalize()} - Benutzername: {username}, Passwort: {'*' * len(password)}")
 
-    success = user_action(username, password, action)
+    success, user_data = user_action(username, password, action)
 
     if success:
-        # Schließe das tkinter-Fenster
         root.destroy()
-
-        # Starte das Lobby-Skript
         try:
-            from Casino.Lobby.Scripts import Lobby  # <-- Import NUR HIER!
+            from Casino.Lobby.Scripts import Lobby
             Lobby.main()
         except Exception as e:
             print(f"Fehler beim Starten von Lobby: {e}")
@@ -140,7 +178,7 @@ def submit(action):
 # Erstelle das Hauptfenster
 root = tk.Tk()
 root.title("Benutzerdaten eingeben")
-root.geometry("400x300")  # Fenstergröße
+root.attributes('-fullscreen', True)  # Vollbildmodus
 root.configure(bg="#2c3e50")  # Dunkler Hintergrund
 
 # Variable für Fenstertitel
