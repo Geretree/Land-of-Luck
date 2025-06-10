@@ -1,4 +1,13 @@
 {
-    "coin": 71295,
-    "is_spawned": 1
+    "ID_USER": 1,
+    "USERNAME": "testuser",
+    "Password": "Test@1234",
+    "coin": 50,
+    "chip5_chips": 0,
+    "chip10_chips": 0,
+    "chip50_chips": 0,
+    "chip100_chips": 0,
+    "chip500_chips": 0,
+    "chip1000_chips": 0,
+    "chip5000_chips": 0
 }
