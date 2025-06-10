@@ -13,7 +13,7 @@ project_root = os.path.dirname(os.path.dirname(os.path.dirname(current_dir)))
 sys.path.append(project_root)
 
 # Pfad zur JSON-Datei
-JSON_FILE_PATH = os.path.join(project_root, "Casino", "Bank", "Coin.json")
+JSON_FILE_PATH = os.path.join(project_root, "Casino", "Bank", "Data", "coin.json")
 
 # Unterdrückt SSL-Warnungen (nur für lokale Tests, nicht für Produktion!)
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
