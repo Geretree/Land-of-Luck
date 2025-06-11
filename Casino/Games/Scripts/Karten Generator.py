@@ -156,12 +156,13 @@ def generate_card():
             (center_x, center_y)  # links
         ]
         pygame.draw.polygon(screen, RED, points2)
+        half = size // 2
         points3 = [
-            (center_x, center_y - half - 5),  # oben
             (center_x + half, center_y),  # rechts
             (center_x, center_y + half + 5),  # unten
             (center_x - half, center_y)  # links
         ]
+        pygame.draw.polygon(screen, RED, points3)
 
 
     def Kreis(center_x, center_y):

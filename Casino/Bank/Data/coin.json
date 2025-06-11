@@ -3,7 +3,7 @@
     "ID_USER": 1,
     "USERNAME": "testuser",
     "Password": "Test@1234",
-    "coin": 0,
+    "coin": 50,
     "chip5_chips": 0,
     "chip10_chips": 0,
     "chip50_chips": 0,

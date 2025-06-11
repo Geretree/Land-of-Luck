@@ -11,6 +11,15 @@ import subprocess
 screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)  # oder feste Größe
 screen_size = screen.get_size()
 
+with open("../../Bank/Data/coin.json", "r") as f:
+    daten = json.load(f)
+
+def get_chip_counts(daten):
+    keys = ["chip5_chips", "chip10_chips", "chip50_chips", "chip100_chips", "chip500_chips", "chip1000_chips", "chip5000_chips"]
+    return [daten.get(key, 0) for key in keys]
+
+chip_counts = get_chip_counts(daten)
+
 # Füge den Projektroot-Pfad hinzu
 current_dir = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.dirname(os.path.dirname(os.path.dirname(current_dir)))
@@ -42,6 +51,17 @@ GREEN = (45, 117, 16)
 WHITE = (255, 255, 255)
 BROWN = (156, 86, 12)
 GOLD = (215, 162, 20)
+
+# Global definieren und sofort laden:
+chip_images = {
+    5: pygame.image.load("../../Bank/Data/Chip5.png").convert_alpha(),
+    10: pygame.image.load("../../Bank/Data/Chip10.png").convert_alpha(),
+    50: pygame.image.load("../../Bank/Data/Chip50.png").convert_alpha(),
+    100: pygame.image.load("../../Bank/Data/Chip100.png").convert_alpha(),
+    500: pygame.image.load("../../Bank/Data/Chip500.png").convert_alpha(),
+    1000: pygame.image.load("../../Bank/Data/Chip1000.png").convert_alpha(),
+    5000: pygame.image.load("../../Bank/Data/Chip5000.png").convert_alpha(),
+}
 
 
 WIDTH, HEIGHT = screen.get_size()
@@ -559,25 +579,25 @@ def chips_back_to_spawn():
 
 
 def spawn_all_chips():
+    global chip_images  # auf globale Variable zugreifen
     ypos = HEIGHT * 0.85
-    xpos = WIDTH * 0.55
+    xpos = WIDTH * 0.5
+    orxpos = WIDTH * 0.5
 
     configs = ChipData.chip_configs()
 
     for config in configs:
         config["list"].clear()
 
-    # ✅ Neue Chips aus gespeicherter Anzahl laden
     with open("../../Bank/Data/coin.json", "r") as f:
         daten = json.load(f)
-    chip_counts = daten.get("chip_counts", [0] * len(configs))
-
-    chip_images = {}
+    chip_counts = get_chip_counts(daten)
 
     for index, config in enumerate(configs):
         value = config["value"]
         count = chip_counts[index]
         chip_list = config["list"]
+        image = chip_images[value]
 
         if value not in chip_images:
             chip_images[value] = pygame.image.load(f"../../Bank/Data/Chip{value}.png").convert_alpha()
@@ -591,11 +611,8 @@ def spawn_all_chips():
             chip_list.append(chip)
             namenumber += 1
             ypos -= 1
-
         ypos = HEIGHT * 0.85
-        xpos += WIDTH * 0.06
-
-
+        xpos += 0.06
 
 def main():
     pygame.init()
@@ -630,7 +647,6 @@ def main():
 
                     with open("../../Bank/Data/coin.json", "r") as f:
                         daten = json.load(f)
-                    daten["chip_counts"] = chip_counts
                     daten["is_spawned"] = 0  # neue Chips beim Start
 
                     with open("../../Bank/Data/coin.json", "w") as f:
