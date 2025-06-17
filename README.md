@@ -1,6 +1,6 @@
 # Land of Luck
 
-## How to install Python
+## How to install Python (Only for the old Version)
 1. Go to https://www.python.org/downloads/
 2. Klick on the download button like showed below.<br>
 ![{131361F3-9EDF-4826-8BEA-62F84142D754}](https://github.com/user-attachments/assets/89042d24-d4ac-479a-a947-c99747bb129c)
@@ -15,18 +15,18 @@
 1. Download the latest release under the following link: https://github.com/Geretree/Land-of-Luck/releases<br>
 ![{16E6BD99-C114-41B6-B97B-4B94E2CE6234}](https://github.com/user-attachments/assets/e2d99cef-f21d-414a-a2e6-2c35798b3584)
 
-3. Unzip the file.
+2. Unzip the file.
 - Hint: https://support.microsoft.com/en-us/windows/zip-and-unzip-files-8d28fa72-f2f9-712f-67df-f80cf89fd4e5
-3. Open the folder:<br>
+3. Open the folder: (Only for the old Version) <br> 
 ![{75EB8900-55C6-456D-BB9E-F5C60BB4D22A}](https://github.com/user-attachments/assets/4c1290f3-260d-4d71-abaf-86a5eb708d10)
-4. Type `cmd` in the path bar and press enter:<br>
+4. Type `cmd` in the path bar and press enter: (Only for the old Version)<br>
 ![{F1BF2B17-6F55-47FD-9D24-9C5A8D49E8A9}](https://github.com/user-attachments/assets/723125e1-4b0e-41fc-8330-a0a4098218bd)
-5. Paste the code below in to the cmd tab:
+5. Paste the code below in to the cmd tab: (Only for the old Version)
 ```
 cd Scripts
 pip install -r requirements.txt
 ```
-6. Start the Game:
+6. Start the Game: (Only for the old Version)
 ```
 python Lobby.py
 ```
