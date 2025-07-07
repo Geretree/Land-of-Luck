@@ -582,7 +582,6 @@ def spawn_all_chips():
     global chip_images  # auf globale Variable zugreifen
     ypos = HEIGHT * 0.85
     xpos = WIDTH * 0.5
-    orxpos = WIDTH * 0.5
 
     configs = ChipData.chip_configs()
 
@@ -597,7 +596,6 @@ def spawn_all_chips():
         value = config["value"]
         count = chip_counts[index]
         chip_list = config["list"]
-        image = chip_images[value]
 
         if value not in chip_images:
             chip_images[value] = pygame.image.load(f"../../Bank/Data/Chip{value}.png").convert_alpha()
