@@ -3,12 +3,12 @@
     "ID_USER": 1,
     "USERNAME": "testuser",
     "Password": "Test@1234",
-    "coin": 100,
-    "chip5_chips": 0,
-    "chip10_chips": 5,
-    "chip50_chips": 0,
-    "chip100_chips": 0,
-    "chip500_chips": 0,
-    "chip1000_chips": 0,
-    "chip5000_chips": 0
+    "coin": 95,
+    "chip5_chips": 1,
+    "chip10_chips": 1,
+    "chip50_chips": 1,
+    "chip100_chips": 1,
+    "chip500_chips": 1,
+    "chip1000_chips": 1,
+    "chip5000_chips": 100
 }

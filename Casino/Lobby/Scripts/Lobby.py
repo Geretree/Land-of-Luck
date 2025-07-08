@@ -5,6 +5,7 @@ import json
 import Casino.Games.Scripts.Einarmiger_Bandit as Einarmiger_Bandit
 import Casino.Games.Scripts.Roulette as Roulette
 import Casino.Bank.Scripts.Bank as Bank
+import Casino.Games.Scripts.Ride_The_Bus as Ride_The_Bus
 
 # === Farben ===
 BLACK = (0, 0, 0)
@@ -32,8 +33,8 @@ peter_size = pygame.Vector2(60, 60)
 peter_pos = pygame.Vector2()
 
 # Bandit
-#bandit_size = pygame.Vector2(100, 100)
-#bandit_pos = pygame.Vector2(200, 200)
+bandit_size = pygame.Vector2(100, 100)
+bandit_pos = pygame.Vector2(200, 600)
 
 # Roulette
 roulette_size = pygame.Vector2(200, 200)
@@ -47,8 +48,8 @@ bank_pos = pygame.Vector2(200, 200)
 peter_image = pygame.image.load("../../Images/Happy_Man.png")
 peter_image = pygame.transform.scale(peter_image, peter_size)
 
-#bandit_image = pygame.image.load("../../Images/bandit.png")
-#bandit_image = pygame.transform.scale(bandit_image, bandit_size)
+bandit_image = pygame.image.load("../../Images/bandit.png")
+bandit_image = pygame.transform.scale(bandit_image, bandit_size)
 
 roulette_image = pygame.image.load("../../Images/Roulette_table.png")
 roulette_image = pygame.transform.scale(roulette_image, roulette_size)
@@ -87,8 +88,8 @@ def peter_player():
         reset_game()
 
 
-#def spawn_bandit():
-#    screen.blit(bandit_image, bandit_pos)
+def spawn_bandit():
+    screen.blit(bandit_image, bandit_pos)
 
 
 def spawn_roulette():
@@ -101,13 +102,13 @@ def spawn_bank():
 def check_collision():
     global dt
     rect_p = pygame.Rect(peter_pos.x, peter_pos.y, *peter_size)
-#    rect_b = pygame.Rect(bandit_pos.x, bandit_pos.y, *bandit_size)
+    rect_b = pygame.Rect(bandit_pos.x, bandit_pos.y, *bandit_size)
     rect_r = pygame.Rect(roulette_pos.x, roulette_pos.y, *roulette_size)
     rect_e = pygame.Rect(bank_pos.x, bank_pos.y, *bank_size)
     keys = pygame.key.get_pressed()
 
-#    if rect_p.colliderect(rect_b) and keys[pygame.K_SPACE]:
-#        Einarmiger_Bandit.main()
+    if rect_p.colliderect(rect_b) and keys[pygame.K_SPACE]:
+        Ride_The_Bus.main()
 
     if rect_p.colliderect(rect_r) and keys[pygame.K_SPACE]:
         Roulette.main()
@@ -116,7 +117,7 @@ def check_collision():
         Bank.main()
 
 
-# —————————————————————————————————————————————————————————————
+# —————————————————————————————————————————————————————————————w
 # Der asynchrone Game-Loop mit Debugging
 # —————————————————————————————————————————————————————————————
 def game():
@@ -133,7 +134,7 @@ def game():
 
             # Roter Hintergrund-Test zum Debuggen
             screen.fill(WHITE)
-#            spawn_bandit()
+            spawn_bandit()
             spawn_roulette()
             spawn_bank()
             peter_player()

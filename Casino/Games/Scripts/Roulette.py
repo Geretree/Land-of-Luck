@@ -707,6 +707,3 @@ def main():
     # Nach Verlassen der Schleife: Pygame beenden
     print("Thanks for playing!")
     pygame.quit()
-
-if __name__ == "__main__":
-    main()
